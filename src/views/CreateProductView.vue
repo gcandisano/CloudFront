@@ -114,15 +114,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProductStore } from '@/stores/product'
+import { useImageUpload } from '@/composables/useImageUpload'
+import { useFormValidation } from '@/composables/useFormValidation'
 import type { CreateProductForm } from '@/types'
 
 const router = useRouter()
 const productStore = useProductStore()
 const categories = productStore.categories
 const fileInput = ref<HTMLInputElement | null>(null)
+
+// Composables
+const { previewImage, imageFile, imageError, handleImageChange, resetImage } = useImageUpload()
+const { errors, validateProductForm } = useFormValidation()
 
 // Estado del formulario
 const form = ref<CreateProductForm>({
@@ -135,33 +141,26 @@ const form = ref<CreateProductForm>({
 
 // Estado de la UI
 const loading = ref(false)
-const previewImage = ref<string | null>(null)
 
 // Métodos
-const handleImageChange = (event: Event) => {
-  const input = event.target as HTMLInputElement
-  if (!input.files?.length) return
-
-  const file = input.files[0]
-  if (!file.type.startsWith('image/')) {
-    // TODO: Mostrar error
-    return
-  }
-
-  form.value.image = file
-  previewImage.value = URL.createObjectURL(file)
-}
-
 const handleSubmit = async () => {
+  if (!validateProductForm(form.value)) return
+  form.value.image = imageFile.value
+
   loading.value = true
   try {
     const product = await productStore.createProduct(form.value)
     router.push(`/product/${product.id}`)
   } catch (error) {
     console.error('Error creating product:', error)
-    // TODO: Mostrar error al usuario
+    // TODO: Implementar sistema de notificaciones
   } finally {
     loading.value = false
   }
 }
+
+// Cleanup
+onUnmounted(() => {
+  resetImage()
+})
 </script>

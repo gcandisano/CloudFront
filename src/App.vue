@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import NotificationToast from '@/components/NotificationToast.vue'
 
 // Store
 const authStore = useAuthStore()
@@ -130,6 +131,9 @@ onUnmounted(() => {
     <main>
       <router-view />
     </main>
+
+    <!-- Notificaciones -->
+    <NotificationToast />
   </div>
 </template>
 

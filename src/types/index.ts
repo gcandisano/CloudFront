@@ -18,6 +18,7 @@ export interface Store {
 }
 
 // Tipos de producto
+// Interfaces de formularios
 export interface CreateProductForm {
   name: string
   description: string
@@ -26,6 +27,14 @@ export interface CreateProductForm {
   image: File | null
 }
 
+// Interfaces de respuesta API
+export interface ApiResponse<T> {
+  data: T
+  message?: string
+  error?: string
+}
+
+// Interfaces de entidades
 export interface Product {
   id: string
   name: string
