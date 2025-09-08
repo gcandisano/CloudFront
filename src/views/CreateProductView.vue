@@ -120,6 +120,7 @@ import { useProductStore } from '@/stores/product'
 import { useImageUpload } from '@/composables/useImageUpload'
 import { useFormValidation } from '@/composables/useFormValidation'
 import type { CreateProductForm } from '@/types'
+import { useToast } from "vue-toastification";
 
 const router = useRouter()
 const productStore = useProductStore()
@@ -129,6 +130,8 @@ const fileInput = ref<HTMLInputElement | null>(null)
 // Composables
 const { previewImage, imageFile, imageError, handleImageChange, resetImage } = useImageUpload()
 const { errors, validateProductForm } = useFormValidation()
+
+const toast = useToast()
 
 // Estado del formulario
 const form = ref<CreateProductForm>({
@@ -153,7 +156,7 @@ const handleSubmit = async () => {
     router.push(`/product/${product.id}`)
   } catch (error) {
     console.error('Error creating product:', error)
-    // TODO: Implementar sistema de notificaciones
+    toast.error('Error creating product')
   } finally {
     loading.value = false
   }

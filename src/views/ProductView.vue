@@ -96,99 +96,97 @@
             </div>
 
             <!-- Botones de acción -->
-            <div class="mt-6 sm:gap-4 sm:items-center sm:flex sm:mt-8">
-              <div v-if="!isOwner && !product.paused">
-                <!-- Botón de favoritos -->
-                <button
-                  v-if="!isLiked"
-                  @click="toggleFavorite"
-                  class="w-full lg:w-fit flex items-center justify-center py-2.5 px-5 text-sm font-medium focus:outline-none rounded-lg border focus:z-10 focus:ring-4 focus:ring-gray-700 bg-gray-800 text-gray-400 border-gray-600 hover:text-white hover:bg-gray-700"
+            <div v-if="!isOwner && !product.paused" class="mt-6 flex flex-col sm:flex-row gap-4 sm:items-center sm:mt-8">
+              <!-- Botón de favoritos -->
+              <button
+                v-if="!isLiked"
+                @click="toggleFavorite"
+                class="w-full sm:w-auto flex items-center justify-center py-2.5 px-5 text-sm font-medium focus:outline-none rounded-lg border focus:z-10 focus:ring-4 focus:ring-gray-700 bg-gray-800 text-gray-400 border-gray-600 hover:text-white hover:bg-gray-700"
+              >
+                <svg
+                  class="w-5 h-5 -ms-2 me-2"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    class="w-5 h-5 -ms-2 me-2"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="1"
-                      d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"
-                    ></path>
-                  </svg>
-                  Agregar a favoritos
-                </button>
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1"
+                    d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"
+                  ></path>
+                </svg>
+                Agregar a favoritos
+              </button>
 
-                <button
-                  v-else
-                  @click="toggleFavorite"
-                  class="w-full lg:w-fit flex items-center justify-center py-2.5 px-5 text-sm font-medium focus:outline-none rounded-lg border focus:z-10 focus:ring-4 focus:ring-gray-700 bg-gray-800 text-gray-400 border-gray-600 hover:text-white hover:bg-gray-700"
+              <button
+                v-else
+                @click="toggleFavorite"
+                class="w-full sm:w-auto flex items-center justify-center py-2.5 px-5 text-sm font-medium focus:outline-none rounded-lg border focus:z-10 focus:ring-4 focus:ring-gray-700 bg-gray-800 text-gray-400 border-gray-600 hover:text-white hover:bg-gray-700"
+              >
+                <svg
+                  class="w-5 h-5 -ms-2 me-2"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="pink"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    class="w-5 h-5 -ms-2 me-2"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    fill="pink"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="1"
-                      d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"
-                    ></path>
-                  </svg>
-                  Quitar de favoritos
-                </button>
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1"
+                    d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"
+                  ></path>
+                </svg>
+                Quitar de favoritos
+              </button>
 
-                <!-- Botón de agregar al carrito -->
-                <button
-                  @click="addToCart"
-                  class="w-full lg:w-fit text-white mt-4 sm:mt-0 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800 flex items-center justify-center"
+              <!-- Botón de agregar al carrito -->
+              <button
+                @click="addToCart"
+                class="w-full sm:w-auto text-white focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800 flex items-center justify-center"
+              >
+                <svg
+                  class="w-5 h-5 -ms-2 me-2"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    class="w-5 h-5 -ms-2 me-2"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4 4h1.5L8 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm.75-3H7.5M11 7H6.312M17 4v6m-3-3h6"
-                    ></path>
-                  </svg>
-                  Agregar al carrito
-                </button>
-              </div>
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 4h1.5L8 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm.75-3H7.5M11 7H6.312M17 4v6m-3-3h6"
+                  ></path>
+                </svg>
+                Agregar al carrito
+              </button>
+            </div>
 
-              <div v-else-if="!isOwner && product.paused">
-                <p class="mb-6 text-gray-400 break-words text-pretty">
-                  Este producto no está disponible actualmente
-                </p>
-              </div>
+            <div v-else-if="!isOwner && product.paused" class="mt-6 sm:mt-8">
+              <p class="mb-6 text-gray-400 break-words text-pretty">
+                Este producto no está disponible actualmente
+              </p>
+            </div>
 
-              <div v-else-if="isOwner">
-                <router-link
-                  to="/store"
-                  class="text-white mt-4 sm:mt-0 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800 flex items-center justify-center"
-                >
-                  Mis productos
-                </router-link>
-              </div>
+            <div v-else-if="isOwner" class="mt-6 sm:mt-8">
+              <router-link
+                to="/store"
+                class="text-white focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800 flex items-center justify-center w-full sm:w-auto"
+              >
+                Mis productos
+              </router-link>
             </div>
 
             <hr class="my-6 md:my-8 border-gray-800" />
@@ -659,5 +657,17 @@ onMounted(async () => {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+.slider {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.slider > div {
+  flex-shrink: 0;
 }
 </style>
