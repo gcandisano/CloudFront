@@ -56,13 +56,14 @@ import SearchFilters from '@/components/SearchFilters.vue'
 import ProductCard from '@/components/ProductCard.vue'
 import Pagination from '@/components/Pagination.vue'
 import NotificationToast from '@/components/NotificationToast.vue'
-import { useProductStore } from '@/stores/product'
 import { useAuthStore } from '@/stores/auth'
-import type { Product, Store, User, Notification } from '@/types'
+import { productService, type ProductFilters } from '@/services/productService'
+import type { Product, Store, Notification } from '@/types'
+import { useToast } from "vue-toastification";
 
 // Stores
-const productStore = useProductStore()
 const authStore = useAuthStore()
+const toast = useToast()
 
 // Router
 const route = useRoute()
@@ -86,7 +87,6 @@ const filters = computed(() => ({
   search: (route.query.search as string) || '',
   category: (route.query.category as string) || '',
   sort: (route.query.sort as string) || 'rating desc',
-  liked: route.query.liked === 'true',
   page: parseInt(route.query.page as string) || 1,
 }))
 
@@ -95,20 +95,29 @@ const loadProducts = async () => {
   try {
     loading.value = true
 
+    // Try to fetch from API first
+    try {
+      const apiFilters: ProductFilters = {
+        page: filters.value.page,
+        orderBy: filters.value.sort || undefined,
+        search: filters.value.search || undefined,
+        category: filters.value.category || undefined,
+      }
+
+      const response = await productService.fetchProducts(apiFilters)
+
+      products.value = response.products
+      totalPages.value = response.pagination.totalPages
+      currentPage.value = response.pagination.page
+
+      return // Success, exit early
+    } catch (apiError) {
+      console.warn('API not available, falling back to mock data:', apiError)
+      toast.error('Error al cargar los productos')
+    }
+
+    // Fallback to mock data if API fails
     // DATOS HARDCODEADOS PARA DEMOSTRACIÓN
-    // TODO: Descomentar cuando tengas la API lista
-    /*
-    const response = await productStore.fetchProducts({
-      ...filters.value,
-      storeId: route.params.storeId as string,
-    })
-
-    products.value = response.products
-    totalPages.value = response.totalPages
-    currentPage.value = response.currentPage
-    */
-
-    // Datos de ejemplo
     products.value = [
       {
         id: '1',
@@ -258,10 +267,16 @@ const loadProducts = async () => {
 
 const loadCategories = async () => {
   try {
-    // TODO: Descomentar cuando tengas la API lista
-    // categories.value = await productStore.fetchCategories()
+    // Try to fetch from API first
+    try {
+      categories.value = await productService.fetchCategories()
+      return // Success, exit early
+    } catch (apiError) {
+      console.warn('API not available for categories, falling back to mock data:', apiError)
+      toast.error('Error al cargar las categorías')
+    }
 
-    // Categorías de ejemplo
+    // Fallback to mock data if API fails
     categories.value = ['Electronics', 'Clothing', 'Books', 'Home', 'Sports']
   } catch (error) {
     console.error('Error cargando categorías:', error)
@@ -271,10 +286,16 @@ const loadCategories = async () => {
 const loadStore = async () => {
   if (route.params.storeId) {
     try {
-      // TODO: Descomentar cuando tengas la API lista
-      // store.value = await productStore.fetchStore(route.params.storeId as string)
+      // Try to fetch from API first
+      try {
+        store.value = await productService.fetchStore(route.params.storeId as string)
+        return // Success, exit early
+      } catch (apiError) {
+        console.warn('API not available for store, falling back to mock data:', apiError)
+        toast.error('Error al cargar la tienda')
+      }
 
-      // Datos de tienda de ejemplo
+      // Fallback to mock data if API fails
       store.value = {
         storeId: route.params.storeId as string,
         storeName: 'TechStore',
