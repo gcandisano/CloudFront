@@ -67,7 +67,7 @@
                     Todas
                   </button>
                 </li>
-                <li v-for="category in categories" :key="category">
+                <li v-for="category in Object.values(Categories)" :key="category">
                   <button
                     @click="selectCategory(category)"
                     type="button"
@@ -197,10 +197,11 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { Categories } from '@/constants/category'
+import type { ProductFilters } from '@/types'
 
 // Props
 interface Props {
-  categories: string[]
   currentFilters: {
     search?: string
     category?: string
@@ -215,7 +216,7 @@ const props = defineProps<Props>()
 
 // Emits
 const emit = defineEmits<{
-  filtersChanged: [filters: any]
+  filtersChanged: [filters: ProductFilters]
 }>()
 
 // Estado reactivo

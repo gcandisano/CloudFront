@@ -1,27 +1,7 @@
-import type { Product } from '@/types'
+import type { ApiResponse, Product, ProductFilters, ProductsResponse, CreateProductForm } from '@/types'
+import { API_BASE_URL } from '.'
 
-export interface ProductFilters {
-  page?: number
-  search?: string
-  category?: string
-  orderBy?: string
-}
-
-export interface ProductResponse {
-  products: Product[]
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-    hasNext: boolean
-    hasPrev: boolean
-  }
-}
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
-
-async function fetchProducts(filters: ProductFilters = {}): Promise<ProductResponse> {
+async function fetchProducts(filters: ProductFilters = {}): Promise<ApiResponse<ProductsResponse>> {
   try {
     const queryParams = new URLSearchParams()
 
@@ -48,73 +28,145 @@ async function fetchProducts(filters: ProductFilters = {}): Promise<ProductRespo
     const data = await response.json()
 
     // Transform the API response to match our frontend types
-    const transformedProducts: Product[] = data.products.map((product: any) => ({
-      id: product.id.toString(),
+    const transformedProducts: Product[] = data.products.map((product: Product) => ({
+      id: product.id,
       name: product.name,
+      description: product.description,
+      category: product.category,
       price: product.price,
-      imageId: '', // This will need to be handled separately if you have image endpoints
-      sellerId: product.store_id.toString(),
-      category: '', // This will need to be added to your API if needed
-      rating: 0, // This will need to be added to your API if needed
-      ratingCount: 0, // This will need to be added to your API if needed
-      paused: !product.is_active,
-      seller: {
-        firstName: '', // This will need to be fetched separately or included in the API
-        store: {
-          storeId: product.store_id.toString(),
-          storeName: '', // This will need to be fetched separately or included in the API
-          storeImageId: null,
-        },
-      },
+      image_url: product.image_url,
+      paused: product.paused,
+      seller_id: product.seller_id,
+      first_name: product.first_name,
+      last_name: product.last_name,
     }))
 
     return {
-      products: transformedProducts,
-      pagination: data.pagination
+      data: {
+        products: transformedProducts,
+        pagination: data.pagination,
+      },
+      success: true,
     }
   } catch (error) {
     console.error('Error fetching products:', error)
-    throw error
-  }
-}
-
-async function fetchCategories(): Promise<string[]> {
-  try {
-    // TODO: Implement when you have a categories endpoint
-    // For now, return mock data
-    return ['Electronics', 'Clothing', 'Books', 'Home', 'Sports']
-  } catch (error) {
-    console.error('Error fetching categories:', error)
-    throw error
-  }
-}
-
-async function fetchStore(storeId: string): Promise<any> {
-  try {
-    // TODO: Implement when you have a store endpoint
-    // For now, return mock data
     return {
-      storeId,
-      storeName: 'Sample Store',
-      description: 'A sample store description',
-      coverImageId: null,
-      storeImageId: null,
-      user: {
-        id: '1',
-        firstName: 'Store',
-        lastName: 'Owner',
-        email: 'owner@store.com',
+      data: {
+        products: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0,
+          hasNext: false,
+          hasPrev: false,
+        },
       },
+      success: false,
+      message: 'Error fetching products',
+      error: error as string,
+    }
+  }
+}
+
+async function fetchProduct(id: string): Promise<ApiResponse<Product>> {
+  try {
+    const url = `${API_BASE_URL}/api/products/${id}`
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    return {
+      data: data.product,
+      success: true,
     }
   } catch (error) {
-    console.error('Error fetching store:', error)
-    throw error
+    console.error('Error fetching product:', error)
+    return {
+      data: null,
+      success: false,
+      message: 'Error fetching product',
+      error: error as string,
+    }
   }
 }
 
-// Export the service object with methods
+async function createProduct(product: CreateProductForm): Promise<ApiResponse<Product>> {
+  try {
+    // Prepare JSON payload - only include fields that are provided
+    const payload: {
+      name: string
+      description: string
+      category: string
+      price: number
+      email: string
+      stock?: number
+      store_name?: string
+      image_url?: string
+    } = {
+      name: product.name,
+      description: product.description,
+      category: product.category,
+      price: product.price,
+      email: product.email
+    }
+
+    // Only add optional fields if they have values
+    if (product.stock !== undefined && product.stock !== null) {
+      payload.stock = product.stock
+    }
+    if (product.store_name) {
+      payload.store_name = product.store_name
+    }
+    if (product.image_url) {
+      payload.image_url = product.image_url
+    }
+
+    const url = `${API_BASE_URL}/api/products`
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    return {
+      data: data.product,
+      success: true,
+      message: data.message || 'Product created successfully',
+    }
+  } catch (error) {
+    console.error('Error creating product:', error)
+    return {
+      data: null,
+      success: false,
+      message: 'Error creating product',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    }
+  }
+}
+
 export const productService = {
   fetchProducts,
-  fetchCategories,
-  fetchStore,
+  fetchProduct,
+  createProduct,
 }

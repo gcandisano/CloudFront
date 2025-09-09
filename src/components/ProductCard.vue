@@ -7,14 +7,14 @@
           class="aspect-h-1 h-80 aspect-w-1 w-full overflow-hidden rounded-t-md bg-gray-200 lg:aspect-none group-hover:opacity-75"
         >
           <img
-            v-if="product.imageId && product.imageId.startsWith('http')"
-            :src="product.imageId"
+            v-if="product.image_url && product.image_url.startsWith('http')"
+            :src="product.image_url"
             :alt="product.name"
             class="h-full w-full object-cover object-center lg:h-full lg:w-full"
           />
           <img
-            v-else-if="product.imageId"
-            :src="`${apiBaseUrl}/image/${product.imageId}`"
+            v-else-if="product.image_url"
+            :src="`${apiBaseUrl}/image/${product.image_url}`"
             :alt="product.name"
             class="h-full w-full object-cover object-center lg:h-full lg:w-full"
           />
@@ -37,7 +37,7 @@
         </div>
 
         <!-- Información de la tienda (solo si showStore es true) -->
-        <router-link v-if="showStore" :to="`/store/${product.sellerId}`">
+        <!-- <router-link v-if="showStore" :to="`/store/${product.seller_id}`">
           <div
             class="py-1 mx-3 hover:mx-0 hover:px-3 flex border-t border-gray-700 hover:bg-gray-700 hover:rounded-md"
           >
@@ -62,15 +62,15 @@
               </p>
             </div>
           </div>
-        </router-link>
+        </router-link> -->
       </div>
     </router-link>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { Product } from '@/types'
+import { formatPrice } from '@/utils/formatting'
 
 // Props
 interface Props {
@@ -78,13 +78,13 @@ interface Props {
   showStore: boolean
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 
 // Configuración de la API
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
 
 // Computed
-const getStoreDisplayName = () => {
+/* const getStoreDisplayName = () => {
   const store = props.product.seller.store
   const storeName = store.storeName
 
@@ -97,15 +97,7 @@ const getStoreDisplayName = () => {
   }
 
   return `Tienda ${store.storeId}`
-}
-
-// Métodos
-const formatPrice = (price: number): string => {
-  return new Intl.NumberFormat('es-ES', {
-    style: 'currency',
-    currency: 'EUR',
-  }).format(price)
-}
+} */
 </script>
 
 <style scoped>
