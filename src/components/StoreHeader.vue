@@ -5,7 +5,7 @@
       <img
         v-if="store.coverImageId"
         :src="`${apiBaseUrl}/image/${store.coverImageId}`"
-        :alt="store.storeId"
+        :alt="store.storeName || store.storeId.toString()"
         class="w-full h-72 object-cover"
       />
       <img
@@ -19,7 +19,7 @@
       <img
         v-if="store.storeImageId"
         :src="`${apiBaseUrl}/image/${store.storeImageId}`"
-        :alt="store.storeId"
+        :alt="store.storeName || store.storeId.toString()"
         class="w-1/5 md:w-36 aspect-square rounded-full absolute bottom-2 left-4 border-4 border-white z-10 shadow-lg py-1"
       />
       <img
@@ -42,7 +42,7 @@
       <router-link
         v-if="isOwner"
         to="/store"
-        class="text-white focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-lg px-6 py-3 mx-4 bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
+        class="text-white focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-lg px-6 py-3 mx-4 bg-blue-600 hover:bg-blue-700"
       >
         Ir a mi tienda
       </router-link>

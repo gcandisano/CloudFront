@@ -17,14 +17,12 @@
             <router-link
               to="/"
               class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              :class="{ 'text-blue-400': $route.path === '/' }"
             >
               Inicio
             </router-link>
             <router-link
               to="/explore"
               class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-              :class="{ 'text-blue-400': $route.path === '/explore' }"
             >
               Explorar
             </router-link>

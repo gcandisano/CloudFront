@@ -3,7 +3,7 @@ import type { User } from "./auth"
 import type { Review } from "./review"
 
 export interface Store {
-  storeId: string
+  storeId: number
   storeName?: string
   description?: string
   coverImageId?: string

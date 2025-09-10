@@ -13,7 +13,7 @@
     <template v-for="page in visiblePages" :key="page">
       <button
         v-if="page !== '...'"
-        @click="goToPage(page)"
+        @click="goToPage(Number(page))"
         :class="[
           'px-3 py-2 text-sm font-medium rounded-lg',
           page === currentPage
