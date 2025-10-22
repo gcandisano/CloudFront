@@ -29,6 +29,7 @@
               <span class="text-blue-500 text-sm mt-2">Sube un archivo</span>
               <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="handleImageChange" />
             </div>
+            <p v-if="imageError" class="text-red-400 text-sm mt-1">{{ imageError }}</p>
           </div>
 
           <!-- Nombre del producto -->
@@ -96,9 +97,9 @@
           </div>
 
           <!-- Botón de submit -->
-          <button type="submit" :disabled="loading"
+          <button type="submit" :disabled="loading || isUploading"
             class="w-full bg-blue-600 text-white rounded-lg py-2.5 font-medium hover:bg-blue-700 transition-colors disabled:opacity-50">
-            <template v-if="loading">
+            <template v-if="loading || isUploading">
               <div class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mx-auto"></div>
             </template>
             <template v-else>Publicar</template>
@@ -123,7 +124,7 @@ const router = useRouter()
 const fileInput = ref<HTMLInputElement | null>(null)
 
 // Composables
-const { previewImage, handleImageChange, resetImage } = useImageUpload()
+const { previewImage, handleImageChange, resetImage, uploadImage, isUploading, imageError } = useImageUpload()
 const { errors, validateProductForm } = useFormValidation()
 const toast = useToast()
 
@@ -141,8 +142,17 @@ const handleSubmit = async () => {
     return
   }
 
-  // TODO: Check if the image should be uploaded to S3 and get the URL
-  /* form.value.image_url = imageFile.value */
+  // Upload image to S3 if available
+  if (previewImage.value) {
+    const imageUrl = await uploadImage()
+    if (imageUrl) {
+      form.value.image_url = imageUrl
+    } else {
+      toast.error('Error al subir la imagen. Intenta nuevamente.')
+      // return
+    }
+  }
+  
 
   loading.value = true
   try {

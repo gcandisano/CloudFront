@@ -1,9 +1,12 @@
 import { ref } from 'vue'
+import { uploadToS3 } from '@/services/s3Service'
 
 export function useImageUpload() {
   const previewImage = ref<string | null>(null)
   const imageFile = ref<File | null>(null)
   const imageError = ref<string | null>(null)
+  const uploadUrl = ref<string | null>(null)
+  const isUploading = ref(false)
 
   const handleImageChange = (event: Event) => {
     const input = event.target as HTMLInputElement
@@ -25,6 +28,33 @@ export function useImageUpload() {
     imageError.value = null
   }
 
+  const uploadImage = async (): Promise<string | null> => {
+    if (!imageFile.value) {
+      imageError.value = 'No hay imagen para subir'
+      return null
+    }
+
+    isUploading.value = true
+    imageError.value = null
+
+    try {
+      const result = await uploadToS3(imageFile.value)
+      
+      if (result.success && result.url) {
+        uploadUrl.value = result.url
+        return result.url
+      } else {
+        imageError.value = result.error || 'Error al subir la imagen'
+        return null
+      }
+    } catch (error) {
+      imageError.value = error instanceof Error ? error.message : 'Error inesperado al subir la imagen'
+      return null
+    } finally {
+      isUploading.value = false
+    }
+  }
+
   const resetImage = () => {
     if (previewImage.value) {
       URL.revokeObjectURL(previewImage.value)
@@ -32,13 +62,18 @@ export function useImageUpload() {
     previewImage.value = null
     imageFile.value = null
     imageError.value = null
+    uploadUrl.value = null
+    isUploading.value = false
   }
 
   return {
     previewImage,
     imageFile,
     imageError,
+    uploadUrl,
+    isUploading,
     handleImageChange,
+    uploadImage,
     resetImage,
   }
 }

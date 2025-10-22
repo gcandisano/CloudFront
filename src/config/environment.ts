@@ -11,6 +11,8 @@ export interface EnvironmentConfig {
   redirectUri: string;
   /** Frontend URL (S3 bucket URL) */
   frontendUrl: string;
+  /** S3 bucket URL for file uploads */
+  s3Url: string;
   /** Current environment (development, production, etc.) */
   nodeEnv: string;
 }
@@ -26,6 +28,7 @@ export function getEnvironmentConfig(): EnvironmentConfig {
     clientId: import.meta.env.VITE_COGNITO_CLIENT_ID,
     redirectUri: import.meta.env.VITE_REDIRECT_URI,
     frontendUrl: import.meta.env.VITE_FRONTEND_URL,
+    s3Url: import.meta.env.VITE_S3_URL,
     nodeEnv: import.meta.env.VITE_NODE_ENV || 'development',
   };
 
@@ -35,6 +38,7 @@ export function getEnvironmentConfig(): EnvironmentConfig {
     'clientId',
     'redirectUri',
     'frontendUrl',
+    's3Url',
   ] as const;
 
   const missingVars = requiredVars.filter(
