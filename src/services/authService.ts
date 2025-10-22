@@ -81,6 +81,67 @@ class AuthService {
     }
   }
 
+  async changePassword(token: string, oldPassword: string, newPassword: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/auth/change-password`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ old_password: oldPassword, new_password: newPassword }),
+      })
+
+      if (!response.ok) {
+        const errorData: ApiError = await response.json()
+        throw new Error(errorData.message || 'Failed to change password')
+      }
+    } catch (error) {
+      console.error('Change password error:', error)
+      throw error
+    }
+  }
+
+  async requestPasswordReset(email: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/auth/request-password-reset`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      if (!response.ok) {
+        const errorData: ApiError = await response.json()
+        throw new Error(errorData.message || 'Failed to request password reset')
+      }
+    } catch (error) {
+      console.error('Request password reset error:', error)
+      throw error
+    }
+  }
+
+  async confirmPasswordReset(email: string, code: string, newPassword: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/auth/confirm-password-reset`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, code, new_password: newPassword }),
+      })
+
+      if (!response.ok) {
+        const errorData: ApiError = await response.json()
+        throw new Error(errorData.message || 'Failed to confirm password reset')
+      }
+    } catch (error) {
+      console.error('Confirm password reset error:', error)
+      throw error
+    }
+  }
+
   /**
    * Get Cognito Hosted UI URL for authentication
    */
