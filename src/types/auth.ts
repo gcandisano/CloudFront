@@ -3,9 +3,11 @@ import type { Store } from "./product"
 // Authentication and User types
 export interface User {
   id: number
-  firstName: string
-  lastName: string
   email: string
+  is_seller: boolean
+  is_active: boolean
+  firstName?: string
+  lastName?: string
   store?: Store
 }
 
@@ -15,16 +17,29 @@ export interface AuthState {
   token: string | null
 }
 
-// Form types for authentication
-export interface LoginForm {
-  email: string
-  password: string
+// Cognito-specific types
+export interface CognitoTokens {
+  accessToken: string
+  idToken: string
+  refreshToken: string
 }
 
-export interface RegisterForm {
+export interface CognitoUser {
+  sub: string
   email: string
-  password: string
-  firstName: string
-  lastName: string
-  isSeller?: boolean
+  email_verified: boolean
+  given_name?: string
+  family_name?: string
+  username?: string
+}
+
+// API Response types
+export interface AuthResponse {
+  user: User
+  tokens?: CognitoTokens
+}
+
+export interface ApiError {
+  error: string
+  message?: string
 }

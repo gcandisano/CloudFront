@@ -174,3 +174,63 @@ Este proyecto migra la funcionalidad del `index.jsp` original:
 ## Licencia
 
 Este proyecto está bajo la Licencia MIT.
+
+## Environment Variables Configuration
+
+This project uses environment variables to manage configuration across different environments. Here's how to set them up:
+
+### Setup Instructions
+
+1. **Copy the example file:**
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. **Update the values in `.env.local`:**
+   Replace the placeholder values with your actual AWS Cognito configuration:
+   ```env
+   VITE_COGNITO_DOMAIN=https://your-domain.auth.us-east-1.amazoncognito.com
+   VITE_COGNITO_CLIENT_ID=your-actual-client-id
+   VITE_REDIRECT_URI=https://your-api-gateway-url/callback
+   VITE_FRONTEND_URL=https://your-s3-bucket-url
+   ```
+
+3. **For production deployment:**
+   Update `.env.production` with your production values.
+
+### Environment Files
+
+- `.env.example` - Template file with placeholder values (committed to git)
+- `.env.local` - Local development values (ignored by git)
+- `.env.production` - Production values (ignored by git)
+
+### Usage in Code
+
+```typescript
+import { getEnvironmentConfig } from '@/config/environment'
+
+// Get all environment configuration
+const config = getEnvironmentConfig()
+
+// Access specific values
+const cognitoDomain = config.cognitoDomain
+const clientId = config.clientId
+```
+
+### Security Best Practices
+
+1. **Never commit sensitive values** - All `.env` files except `.env.example` are ignored by git
+2. **Use VITE_ prefix** - Only variables prefixed with `VITE_` are available in the browser
+3. **Validate configuration** - The `getEnvironmentConfig()` function validates all required variables
+4. **Environment-specific files** - Use different files for different environments
+
+### Available Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `VITE_COGNITO_DOMAIN` | AWS Cognito User Pool domain | Yes |
+| `VITE_COGNITO_CLIENT_ID` | AWS Cognito App Client ID | Yes |
+| `VITE_REDIRECT_URI` | OAuth redirect URI for API Gateway | Yes |
+| `VITE_FRONTEND_URL` | Frontend URL (S3 bucket URL) | Yes |
+| `VITE_NODE_ENV` | Environment mode (development/production) | No |
+

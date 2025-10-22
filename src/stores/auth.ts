@@ -1,9 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { User, AuthState } from '@/types'
-
-// Configuración de la API
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
+import type { User } from '@/types'
+import { authService } from '@/services/authService'
 
 export const useAuthStore = defineStore('auth', () => {
   // Estado
@@ -14,107 +12,79 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Computed properties
   const isAuthenticated = computed(() => !!token.value && !!currentUser.value)
+  const isSeller = computed(() => currentUser.value?.is_seller || false)
+  const isActive = computed(() => currentUser.value?.is_active || false)
 
   // Métodos
-  const login = async (email: string, password: string): Promise<void> => {
-    try {
-      loading.value = true
-      error.value = null
+  const initializeAuth = async (): Promise<void> => {
+    // Check if there are tokens in the URL (after Cognito callback)
+    const tokensFromUrl = authService.parseTokensFromUrl()
 
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      })
+    if (tokensFromUrl) {
+      // Store tokens from URL
+      setAuthData(tokensFromUrl.accessToken, tokensFromUrl.refreshToken)
 
-      if (!response.ok) {
-        throw new Error('Credenciales inválidas')
-      }
+      // Clear tokens from URL
+      authService.clearTokensFromUrl()
 
-      const data = await response.json()
-      token.value = data.token
-      currentUser.value = data.user
-
-      // Guardar token en localStorage
-      localStorage.setItem('token', data.token)
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Error de autenticación'
-      throw err
-    } finally {
-      loading.value = false
+      // Fetch user data
+      await getCurrentUser()
+    } else if (token.value) {
+      await getCurrentUser()
     }
   }
 
-  const register = async (userData: {
-    firstName: string
-    lastName: string
-    email: string
-    password: string
-  }): Promise<void> => {
+  const loginWithCognito = (): void => {
     try {
-      loading.value = true
-      error.value = null
-
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Error en el registro')
-      }
+      const loginUrl = authService.getCognitoLoginUrl()
+      window.location.href = loginUrl
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Error en el registro'
-      throw err
-    } finally {
-      loading.value = false
+      console.error('Error redirecting to Cognito:', err)
+      error.value = 'Error de configuración de Cognito'
     }
-  }
-
-  const logout = (): void => {
-    currentUser.value = null
-    token.value = null
-    localStorage.removeItem('token')
   }
 
   const getCurrentUser = async (): Promise<void> => {
     if (!token.value) return
-
+    loading.value = true
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/me`, {
-        headers: {
-          Authorization: `Bearer ${token.value}`,
-          'Content-Type': 'application/json',
-        },
-      })
-
-      if (response.ok) {
-        const user: User = await response.json()
-        currentUser.value = user
-      } else {
-        // Token inválido, limpiar estado
-        logout()
-      }
+      const user = await authService.getCurrentUser(token.value)
+      currentUser.value = user
     } catch (err) {
-      console.error('Error obteniendo usuario actual:', err)
-      logout()
+      console.error('Error getting current user, logging out:', err)
+      await logout()
+    } finally {
+      loading.value = false
     }
+  }
+
+  const logout = () => {
+    currentUser.value = null
+    token.value = null
+    localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
   }
 
   const clearError = (): void => {
     error.value = null
   }
 
-  // Inicializar usuario si hay token
-  if (token.value) {
-    getCurrentUser()
+  // Set token and user (for Cognito authentication flow)
+  const setAuthData = (accessToken: string, refreshToken?: string, user?: User): void => {
+    token.value = accessToken
+    localStorage.setItem('token', accessToken)
+
+    if (refreshToken) {
+      localStorage.setItem('refreshToken', refreshToken)
+    }
+
+    if (user) {
+      currentUser.value = user
+    }
   }
+
+  // Inicializar autenticación
+  initializeAuth()
 
   return {
     // Estado
@@ -125,12 +95,15 @@ export const useAuthStore = defineStore('auth', () => {
 
     // Computed
     isAuthenticated,
+    isSeller,
+    isActive,
 
     // Métodos
-    login,
-    register,
+    initializeAuth,
+    loginWithCognito,
     logout,
     getCurrentUser,
     clearError,
+    setAuthData,
   }
 })
