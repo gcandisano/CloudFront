@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,7 +21,6 @@ const router = createRouter({
       component: HomeView,
       props: true,
     },
-    // Rutas activas
     {
       path: '/product/:id',
       name: 'product',
@@ -32,13 +32,18 @@ const router = createRouter({
       component: () => import('@/views/CreateProductView.vue'),
       meta: { requiresAuth: false },
     },
-    // Rutas temporalmente comentadas hasta crear las vistas
-    /*
+    {
+      path: '/callback',
+      name: 'callback',
+      component: () => import('@/views/CallbackView.vue'),
+    },
     {
       path: '/login',
       name: 'login',
       component: () => import('@/views/LoginView.vue'),
     },
+    // Rutas temporalmente comentadas hasta crear las vistas
+    /*
     {
       path: '/register',
       name: 'register',
@@ -68,9 +73,9 @@ const router = createRouter({
 
 // Guardia de navegación para rutas protegidas
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token')
+  const authStore = useAuthStore()
 
-  if (to.meta.requiresAuth && !token) {
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next('/login')
   } else {
     next()
