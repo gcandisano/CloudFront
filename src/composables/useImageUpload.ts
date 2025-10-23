@@ -39,6 +39,7 @@ export function useImageUpload() {
 
     try {
       const result = await uploadToS3(imageFile.value)
+      console.log('result', result)
       
       if (result.success && result.url) {
         uploadUrl.value = result.url

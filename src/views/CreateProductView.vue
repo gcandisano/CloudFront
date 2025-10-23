@@ -145,6 +145,7 @@ const handleSubmit = async () => {
   // Upload image to S3 if available
   if (previewImage.value) {
     const imageUrl = await uploadImage()
+    console.log('imageUrl', imageUrl)
     if (imageUrl) {
       form.value.image_url = imageUrl
     } else {
@@ -152,7 +153,6 @@ const handleSubmit = async () => {
       // return
     }
   }
-  
 
   loading.value = true
   try {
