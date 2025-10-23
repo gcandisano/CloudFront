@@ -9,8 +9,6 @@ export interface EnvironmentConfig {
   clientId: string;
   /** OAuth redirect URI for API Gateway callback */
   redirectUri: string;
-  /** Frontend URL (S3 bucket URL) */
-  frontendUrl: string;
   /** S3 bucket URL for file uploads */
   s3Url: string;
   /** Current environment (development, production, etc.) */
@@ -27,7 +25,6 @@ export function getEnvironmentConfig(): EnvironmentConfig {
     cognitoDomain: import.meta.env.VITE_COGNITO_DOMAIN,
     clientId: import.meta.env.VITE_COGNITO_CLIENT_ID,
     redirectUri: import.meta.env.VITE_REDIRECT_URI,
-    frontendUrl: import.meta.env.VITE_FRONTEND_URL,
     s3Url: import.meta.env.VITE_S3_URL,
     nodeEnv: import.meta.env.VITE_NODE_ENV || 'development',
   };
@@ -37,7 +34,6 @@ export function getEnvironmentConfig(): EnvironmentConfig {
     'cognitoDomain',
     'clientId',
     'redirectUri',
-    'frontendUrl',
     's3Url',
   ] as const;
 

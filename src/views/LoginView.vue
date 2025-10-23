@@ -99,6 +99,11 @@ const handleLogin = () => {
       scope: 'openid email profile',
     })
 
+    console.log('params', params.toString())
+    console.log('cognitoDomain', cognitoDomain)
+    console.log('clientId', clientId)
+    console.log('redirectUri', redirectUri)
+
     const loginUrl = `https://${cognitoDomain}.auth.${import.meta.env.VITE_AWS_REGION || 'us-east-1'}.amazoncognito.com/oauth2/authorize?${params.toString()}`
 
     // Redirect to Cognito Hosted UI

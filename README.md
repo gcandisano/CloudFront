@@ -231,6 +231,5 @@ const clientId = config.clientId
 | `VITE_COGNITO_DOMAIN` | AWS Cognito User Pool domain | Yes |
 | `VITE_COGNITO_CLIENT_ID` | AWS Cognito App Client ID | Yes |
 | `VITE_REDIRECT_URI` | OAuth redirect URI for API Gateway | Yes |
-| `VITE_FRONTEND_URL` | Frontend URL (S3 bucket URL) | Yes |
 | `VITE_NODE_ENV` | Environment mode (development/production) | No |
 
