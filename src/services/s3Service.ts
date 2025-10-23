@@ -27,7 +27,7 @@ export async function uploadToS3(file: File): Promise<S3UploadResponse> {
   try {
     const config = getEnvironmentConfig()
     const uniqueFileName = generateUniqueFileName(file.name)
-    const uploadUrl = `http://${config.s3Url}/${uniqueFileName}`
+    const uploadUrl = `${config.s3Url}/${uniqueFileName}`
 
     // Upload file to S3 using PUT request
     const response = await fetch(uploadUrl, {
