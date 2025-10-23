@@ -1,6 +1,7 @@
 export const formatPrice = (price: number): string => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('es-AR', {
     style: 'currency',
-    currency: 'USD',
-  }).format(price)
+    currency: 'ARS',
+    currencyDisplay: 'symbol',
+  }).format(price).replace('ARS', '$')
 }
