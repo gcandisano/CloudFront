@@ -59,13 +59,13 @@ onUnmounted(() => {
             >
               Inicio
             </router-link>
-            <router-link
+            <!-- <router-link
               to="/explore"
               class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
               :class="{ 'text-blue-400': $route.path === '/explore' }"
             >
               Explorar
-            </router-link>
+            </router-link> -->
           </div>
         </div>
 
@@ -107,7 +107,7 @@ onUnmounted(() => {
             </div>
           </template>
 
-          <template v-else>
+          <!-- <template v-else>
             <div class="flex items-center space-x-2">
               <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -118,7 +118,7 @@ onUnmounted(() => {
               </svg>
               <span class="text-white text-sm font-medium">Iniciar Sesión</span>
             </div>
-          </template>
+          </template> -->
         </div>
       </div>
     </div>
