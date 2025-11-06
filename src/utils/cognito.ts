@@ -44,3 +44,8 @@ export const getCognitoUrls = () => {
     logoutUrl: `https://${domain}/logout?${logoutParams.toString()}`
   }
 }
+
+// Get authentication token from localStorage
+export const getAuthToken = (): string | null => {
+  return localStorage.getItem('token')
+}

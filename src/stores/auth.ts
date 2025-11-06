@@ -11,7 +11,13 @@ export const useAuthStore = defineStore('auth', () => {
   const error = ref<string | null>(null)
 
   // Computed properties
-  const isAuthenticated = computed(() => !!token.value && !!currentUser.value)
+  const isAuthenticated = computed(() => {
+    // En desarrollo, si hay token simulado, considerar autenticado
+    if (import.meta.env.DEV && token.value === 'mock-token-for-development') {
+      return true
+    }
+    return !!token.value && !!currentUser.value
+  })
   const isSeller = computed(() => currentUser.value?.is_seller || false)
   const isActive = computed(() => currentUser.value?.is_active || false)
 
@@ -46,13 +52,23 @@ export const useAuthStore = defineStore('auth', () => {
 
   const getCurrentUser = async (): Promise<void> => {
     if (!token.value) return
+    
+    // En desarrollo, si es un token simulado, no intentar llamar al backend
+    if (import.meta.env.DEV && token.value === 'mock-token-for-development') {
+      // El usuario ya está establecido por simulateAuth, no hacer nada
+      return
+    }
+    
     loading.value = true
     try {
       const user = await authService.getCurrentUser(token.value)
       currentUser.value = user
     } catch (err) {
       console.error('Error getting current user, logging out:', err)
-      await logout()
+      // En desarrollo, si falla pero hay un token simulado, no desloguear
+      if (!(import.meta.env.DEV && token.value === 'mock-token-for-development')) {
+        await logout()
+      }
     } finally {
       loading.value = false
     }
@@ -134,6 +150,40 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  // Función para simular autenticación en desarrollo
+  const simulateAuth = (): void => {
+    if (import.meta.env.DEV) {
+      const mockUser: User = {
+        id: 1,
+        email: 'usuario@ejemplo.com',
+        is_seller: true,
+        is_active: true,
+        firstName: 'Usuario',
+        lastName: 'Ejemplo',
+      }
+      const mockToken = 'mock-token-for-development'
+      setAuthData(mockToken, undefined, mockUser)
+      console.log('✅ Usuario simulado autenticado:', mockUser)
+    }
+  }
+
+  // En desarrollo, simular autenticación ANTES de inicializar si no hay token
+  if (import.meta.env.DEV && typeof window !== 'undefined') {
+    if (!localStorage.getItem('token')) {
+      // Simular inmediatamente antes de que el router se inicialice
+      simulateAuth()
+      console.log('🔧 Modo desarrollo: Autenticación simulada automáticamente')
+    }
+    
+    // Exponer funciones globalmente
+    ;(window as any).simulateAuth = simulateAuth
+    ;(window as any).logoutSimulated = () => {
+      logout()
+      console.log('✅ Usuario simulado deslogueado')
+    }
+    console.log('💡 Para desloguear, ejecuta en la consola: logoutSimulated()')
+  }
+
   // Inicializar autenticación
   initializeAuth()
 
@@ -160,5 +210,6 @@ export const useAuthStore = defineStore('auth', () => {
     getCurrentUser,
     clearError,
     setAuthData,
+    simulateAuth,
   }
 })
