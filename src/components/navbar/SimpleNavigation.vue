@@ -20,9 +20,6 @@ const logout = () => {
   router.push('/')
 }
 
-const login = () => {
-  router.push('/login')
-}
 
 // Cerrar menú al hacer clic fuera
 const handleClickOutside = (event: Event) => {
@@ -121,10 +118,10 @@ onUnmounted(() => {
           </div>
 
           <!-- Login Button -->
-          <button
+          <router-link
             v-else
-            @click="login"
-            class="flex items-center space-x-2 text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium border border-gray-700 hover:border-gray-600"
+            to="/login"
+            class="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -134,7 +131,7 @@ onUnmounted(() => {
               />
             </svg>
             <span>Iniciar Sesión</span>
-          </button>
+          </router-link>
         </div>
       </div>
     </div>

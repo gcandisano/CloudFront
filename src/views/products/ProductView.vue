@@ -244,7 +244,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { useUserStore } from '@/stores/user'
 import type { Product, Review } from '@/types'
 import { formatPrice } from '@/utils/formatting'
 import { productService } from '@/services/productService'
@@ -254,7 +254,7 @@ const toast = useToast()
 
 // Props y configuración
 const route = useRoute()
-const authStore = useAuthStore()
+const userStore = useUserStore()
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
 
 // Estado reactivo
@@ -266,8 +266,8 @@ const loading = ref(false)
 
 // Computed properties
 const isOwner = computed(() => {
-  if (!product.value || !authStore.currentUser) return false
-  return product.value.seller_id === authStore.currentUser.id
+  if (!product.value || !userStore.user) return false
+  return product.value.seller_sub === userStore.user.sub
 })
 
 // Lifecycle
@@ -358,10 +358,8 @@ const loadRelatedProducts = async () => {
         price: 1199.99,
         image_url:
           'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop',
-        seller_id: 1,
+        seller_sub: '1',
         category: 'Electronics',
-        first_name: 'Juan',
-        last_name: 'Pérez',
         rating: 0,
         ratingCount: 0,
         paused: false,
@@ -380,10 +378,8 @@ const loadRelatedProducts = async () => {
         price: 249.99,
         image_url:
           'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=400&h=400&fit=crop',
-        seller_id: 2,
+        seller_sub: '2',
         category: 'Electronics',
-        first_name: 'María',
-        last_name: 'García',
         rating: 0,
         ratingCount: 0,
         paused: false,
@@ -401,21 +397,11 @@ const loadRelatedProducts = async () => {
         name: 'iPad Air',
         price: 599.99,
         image_url: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
-        seller_id: 1,
+        seller_sub: '3',
         category: 'Electronics',
-        first_name: 'Juan',
-        last_name: 'Pérez',
         rating: 0,
         ratingCount: 0,
         paused: false,
-        /* seller: {
-          firstName: 'Juan',
-          store: {
-            storeId: 'store1',
-            storeName: 'TechStore',
-            storeImageId: null,
-          },
-        }, */
       },
     ]
   } catch (error) {

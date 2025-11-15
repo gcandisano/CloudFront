@@ -1,3 +1,5 @@
+import { CognitoUserPool } from 'amazon-cognito-identity-js';
+
 /**
  * Environment variables configuration
  * These variables are prefixed with VITE_ to be available in the browser
@@ -5,6 +7,8 @@
 export interface EnvironmentConfig {
   /** AWS Cognito User Pool domain */
   cognitoDomain: string;
+  /** AWS Cognito User Pool ID */
+  userPoolId: string;
   /** AWS Cognito App Client ID */
   clientId: string;
   /** OAuth redirect URI for API Gateway callback */
@@ -13,6 +17,8 @@ export interface EnvironmentConfig {
   s3Url: string;
   /** Current environment (development, production, etc.) */
   nodeEnv: string;
+  /** Frontend URL */
+  frontendUrl: string;
 }
 
 /**
@@ -23,18 +29,21 @@ export interface EnvironmentConfig {
 export function getEnvironmentConfig(): EnvironmentConfig {
   const config: EnvironmentConfig = {
     cognitoDomain: import.meta.env.VITE_COGNITO_DOMAIN,
+    userPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID,
     clientId: import.meta.env.VITE_COGNITO_CLIENT_ID,
     redirectUri: import.meta.env.VITE_REDIRECT_URI,
     s3Url: import.meta.env.VITE_S3_URL,
     nodeEnv: import.meta.env.VITE_NODE_ENV || 'development',
+    frontendUrl: import.meta.env.VITE_FRONTEND_URL,
   };
 
   // Validate required environment variables
   const requiredVars = [
-    'cognitoDomain',
+    /* 'cognitoDomain', */
+    'userPoolId',
     'clientId',
-    'redirectUri',
-    's3Url',
+    /* 'redirectUri',
+    's3Url', */
   ] as const;
 
   const missingVars = requiredVars.filter(
@@ -50,6 +59,11 @@ export function getEnvironmentConfig(): EnvironmentConfig {
 
   return config;
 }
+
+export const userPool = new CognitoUserPool({
+  UserPoolId: getEnvironmentConfig().userPoolId,
+  ClientId: getEnvironmentConfig().clientId,
+})
 
 /**
  * Check if running in development mode

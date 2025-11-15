@@ -37,12 +37,14 @@ import { useAuthStore } from '@/stores/auth'
 import { productService } from '@/services/productService'
 import type { Product, Store, ProductFilters } from '@/types'
 import { useToast } from "vue-toastification";
+import { useUserStore } from '@/stores/user'
 
 // Composables
 const toast = useToast()
 
 // Stores
 const authStore = useAuthStore()
+const userStore = useUserStore()
 
 // Router
 const route = useRoute()
@@ -63,7 +65,7 @@ const filters = ref<ProductFilters>({
 
 // Computed properties
 const isAuthenticated = computed(() => authStore.isAuthenticated)
-const currentUser = computed(() => authStore.currentUser)
+const currentUser = computed(() => userStore.user)
 
 
 onMounted(async () => {
