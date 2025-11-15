@@ -1,4 +1,4 @@
-import { CognitoUserPool } from 'amazon-cognito-identity-js';
+import { CognitoUserPool } from 'amazon-cognito-identity-js'
 
 /**
  * Environment variables configuration
@@ -6,11 +6,11 @@ import { CognitoUserPool } from 'amazon-cognito-identity-js';
  */
 export interface EnvironmentConfig {
   /** AWS Cognito User Pool ID */
-  userPoolId: string;
+  userPoolId: string
   /** AWS Cognito App Client ID */
-  clientId: string;
+  clientId: string
   /** S3 bucket URL for file uploads */
-  s3Url: string;
+  s3Url: string
 }
 
 /**
@@ -23,27 +23,25 @@ export function getEnvironmentConfig(): EnvironmentConfig {
     userPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID,
     clientId: import.meta.env.VITE_COGNITO_CLIENT_ID,
     s3Url: import.meta.env.VITE_S3_URL,
-  };
+  }
 
   // Validate required environment variables
   const requiredVars = [
     'userPoolId',
     'clientId',
     /* 's3Url', */
-  ] as const;
+  ] as const
 
-  const missingVars = requiredVars.filter(
-    (key) => !config[key] || config[key].includes('<')
-  );
+  const missingVars = requiredVars.filter((key) => !config[key] || config[key].includes('<'))
 
   if (missingVars.length > 0) {
     throw new Error(
       `Missing or invalid environment variables: ${missingVars.join(', ')}. ` +
-      'Please check your .env file and ensure all values are properly set.'
-    );
+        'Please check your .env file and ensure all values are properly set.',
+    )
   }
 
-  return config;
+  return config
 }
 
 export const userPool = new CognitoUserPool({

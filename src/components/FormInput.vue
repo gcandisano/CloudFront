@@ -13,7 +13,7 @@
       :class="[
         'w-full bg-gray-700 text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors',
         error ? 'border-red-500' : 'border-gray-600',
-        disabled ? 'opacity-50 cursor-not-allowed' : ''
+        disabled ? 'opacity-50 cursor-not-allowed' : '',
       ]"
       @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
       @blur="$emit('blur')"
@@ -39,4 +39,3 @@ defineEmits<{
   blur: []
 }>()
 </script>
-

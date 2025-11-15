@@ -1,9 +1,9 @@
-import type { PaginationResponse } from "./api"
-import type { User } from "./user"
-import type { Review } from "./review"
+import type { PaginationResponse } from './api'
+import type { User } from './user'
+import type { Review } from './review'
 
 export interface Store {
-  storeId: number
+  storeId: string
   storeName?: string
   description?: string
   coverImageId?: string
@@ -52,4 +52,3 @@ export interface ProductsResponse {
   products: Product[]
   pagination: PaginationResponse
 }
-

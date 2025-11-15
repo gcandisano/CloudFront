@@ -11,7 +11,7 @@
       :class="[
         'w-12 h-14 text-center text-2xl font-semibold rounded-lg border-2 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all',
         error ? 'border-red-500' : 'border-gray-600',
-        disabled ? 'opacity-50 cursor-not-allowed' : ''
+        disabled ? 'opacity-50 cursor-not-allowed' : '',
       ]"
       :disabled="disabled"
       @input="handleInput(index, $event)"
@@ -24,15 +24,18 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 
-const props = withDefaults(defineProps<{
-  modelValue?: string
-  error?: string
-  disabled?: boolean
-}>(), {
-  modelValue: '',
-  error: '',
-  disabled: false,
-})
+const props = withDefaults(
+  defineProps<{
+    modelValue?: string
+    error?: string
+    disabled?: boolean
+  }>(),
+  {
+    modelValue: '',
+    error: '',
+    disabled: false,
+  },
+)
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
@@ -48,23 +51,31 @@ const setInputRef = (el: unknown, index: number) => {
 }
 
 // Watch for external changes to modelValue
-watch(() => props.modelValue, (newValue) => {
-  if (newValue && newValue.length === 6) {
-    digits.value = newValue.split('')
-  } else if (!newValue) {
-    digits.value = ['', '', '', '', '', '']
-  }
-}, { immediate: true })
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (newValue && newValue.length === 6) {
+      digits.value = newValue.split('')
+    } else if (!newValue) {
+      digits.value = ['', '', '', '', '', '']
+    }
+  },
+  { immediate: true },
+)
 
 // Emit the complete code whenever digits change
-watch(digits, (newDigits) => {
-  const code = newDigits.join('')
-  if (code.length === 6) {
-    emit('update:modelValue', code)
-  } else {
-    emit('update:modelValue', '')
-  }
-}, { deep: true })
+watch(
+  digits,
+  (newDigits) => {
+    const code = newDigits.join('')
+    if (code.length === 6) {
+      emit('update:modelValue', code)
+    } else {
+      emit('update:modelValue', '')
+    }
+  },
+  { deep: true },
+)
 
 const handleInput = (index: number, event: Event) => {
   const target = event.target as HTMLInputElement
@@ -119,7 +130,6 @@ defineExpose({
   clear: () => {
     digits.value = ['', '', '', '', '', '']
     inputRefs.value[0]?.focus()
-  }
+  },
 })
 </script>
-

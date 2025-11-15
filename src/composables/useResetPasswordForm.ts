@@ -6,11 +6,13 @@ export interface ResetPasswordForm {
   confirmPassword: string
 }
 
-export function useResetPasswordForm(initialForm: ResetPasswordForm = {
-  code: '',
-  newPassword: '',
-  confirmPassword: '',
-}) {
+export function useResetPasswordForm(
+  initialForm: ResetPasswordForm = {
+    code: '',
+    newPassword: '',
+    confirmPassword: '',
+  },
+) {
   const form = ref<ResetPasswordForm>({ ...initialForm })
   const errors = ref<{
     newPassword?: string
@@ -112,4 +114,3 @@ export function useResetPasswordForm(initialForm: ResetPasswordForm = {
     resetForm,
   }
 }
-

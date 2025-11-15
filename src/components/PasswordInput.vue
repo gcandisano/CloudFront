@@ -53,4 +53,3 @@ const localValue = computed({
   set: (value: string) => emit('update:modelValue', value),
 })
 </script>
-

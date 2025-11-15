@@ -15,15 +15,24 @@
       <!-- Success message -->
       <div v-if="emailSent" class="mb-4 p-3 bg-green-900/20 border border-green-500 rounded-lg">
         <p class="text-green-400 text-sm">
-          Se ha enviado un código de verificación a <span class="font-medium">{{ form.email }}</span>.
-          Por favor revisa tu email.
+          Se ha enviado un código de verificación a <span class="font-medium">{{ form.email }}</span
+          >. Por favor revisa tu email.
         </p>
       </div>
 
       <form v-if="!emailSent" @submit.prevent="handleSubmit" class="space-y-6">
         <!-- Email field -->
-        <FormInput id="email" v-model="form.email" label="Email" type="email" placeholder="tu@email.com"
-          :error="errors.email" :disabled="loading" required @blur="validateEmail" />
+        <FormInput
+          id="email"
+          v-model="form.email"
+          label="Email"
+          type="email"
+          placeholder="tu@email.com"
+          :error="errors.email"
+          :disabled="loading"
+          required
+          @blur="validateEmail"
+        />
 
         <!-- Submit button -->
         <FormButton type="submit" :loading="loading" :disabled="loading">
@@ -33,17 +42,16 @@
 
       <!-- Action links -->
       <div class="mt-6 flex flex-col items-center space-y-2">
-        <FormButton
-          v-if="emailSent"
-          type="button"
-          :disabled="loading"
-          @click="handleContinue"
-        >
+        <FormButton v-if="emailSent" type="button" :disabled="loading" @click="handleContinue">
           Continuar con el restablecimiento
         </FormButton>
 
-        <button type="button" :disabled="loading" @click="handleBackToLogin"
-          class="text-gray-400 hover:text-gray-300 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+        <button
+          type="button"
+          :disabled="loading"
+          @click="handleBackToLogin"
+          class="text-gray-400 hover:text-gray-300 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
           Volver al inicio de sesión
         </button>
       </div>
@@ -82,7 +90,7 @@ const {
     await authService.forgotPassword(formData.email)
     emailSent.value = true
     toast.success('Código de verificación enviado. Revisa tu email.')
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Forgot password error:', error)
     const errorMessage = error.message || 'Error al solicitar el restablecimiento de contraseña'

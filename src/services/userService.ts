@@ -43,4 +43,3 @@ async function getCurrentUser(accessToken: string): Promise<ApiResponse<User>> {
 export const userService = {
   getCurrentUser,
 }
-

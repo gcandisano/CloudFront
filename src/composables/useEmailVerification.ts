@@ -1,7 +1,6 @@
 import { ref, computed } from 'vue'
 
 export function useEmailVerification() {
-
   // State
   const email = ref<string>('')
   const code = ref<string>('')
@@ -70,4 +69,3 @@ export function useEmailVerification() {
     reset,
   }
 }
-

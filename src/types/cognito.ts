@@ -38,4 +38,3 @@ export interface CognitoUserInfo {
   username?: string
   'cognito:username'?: string
 }
-

@@ -63,8 +63,8 @@ export function login(credentials: LoginCredentials): Promise<CognitoTokens> {
         // This should be handled separately, but we'll reject with a specific error
         reject(
           new Error(
-            'NEW_PASSWORD_REQUIRED: You must set a new password. Please use the reset password flow.'
-          )
+            'NEW_PASSWORD_REQUIRED: You must set a new password. Please use the reset password flow.',
+          ),
         )
       },
     })
@@ -220,4 +220,3 @@ export const authService = {
   resendVerificationCode,
   resendPasswordResetCode,
 }
-

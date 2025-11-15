@@ -1,4 +1,10 @@
-import type { ApiResponse, Product, ProductFilters, ProductsResponse, CreateProductForm } from '@/types'
+import type {
+  ApiResponse,
+  Product,
+  ProductFilters,
+  ProductsResponse,
+  CreateProductForm,
+} from '@/types'
 import { API_BASE_URL } from '.'
 
 async function fetchProducts(filters: ProductFilters = {}): Promise<ApiResponse<ProductsResponse>> {
@@ -36,9 +42,7 @@ async function fetchProducts(filters: ProductFilters = {}): Promise<ApiResponse<
       price: product.price,
       image_url: product.image_url,
       paused: product.paused,
-      seller_id: product.seller_id,
-      first_name: product.first_name,
-      last_name: product.last_name,
+      seller_sub: product.seller_sub,
     }))
 
     return {
@@ -118,7 +122,7 @@ async function createProduct(product: CreateProductForm): Promise<ApiResponse<Pr
       description: product.description,
       category: product.category,
       price: product.price,
-      email: product.email
+      email: product.email,
     }
 
     // Only add optional fields if they have values

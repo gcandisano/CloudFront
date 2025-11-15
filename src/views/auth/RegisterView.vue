@@ -86,13 +86,7 @@
         />
 
         <!-- Submit button -->
-        <FormButton
-          type="submit"
-          :loading="loading"
-          :disabled="loading"
-        >
-          Registrarse
-        </FormButton>
+        <FormButton type="submit" :loading="loading" :disabled="loading"> Registrarse </FormButton>
       </form>
 
       <!-- Action links -->
@@ -160,7 +154,7 @@ const {
 
     toast.success('Registro exitoso. Verifica tu email para continuar.')
     router.push({ path: '/verify-email', query: { email: formData.email } })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Registration error:', error)
     toast.error(error.message || 'Error al registrar el usuario')
@@ -178,4 +172,3 @@ const handleLogin = () => {
   router.push('/login')
 }
 </script>
-

@@ -35,11 +35,7 @@
         />
 
         <!-- Submit button -->
-        <FormButton
-          type="submit"
-          :loading="loading"
-          :disabled="loading"
-        >
+        <FormButton type="submit" :loading="loading" :disabled="loading">
           Iniciar Sesión
         </FormButton>
       </form>
@@ -111,7 +107,7 @@ const {
     authStore.setAuthData(tokens.accessToken, tokens.refreshToken, tokens.idToken)
     await userStore.fetchCurrentUser()
     router.push('/')
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Login failed:', error)
 
@@ -139,4 +135,3 @@ const handleSignUp = () => {
   router.push('/register')
 }
 </script>
-

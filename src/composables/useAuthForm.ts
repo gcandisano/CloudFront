@@ -20,7 +20,7 @@ export type AuthForm = LoginForm | RegisterForm
 
 export function useAuthForm<T extends AuthForm>(
   initialForm: T,
-  submitHandler: (form: T) => Promise<void>
+  submitHandler: (form: T) => Promise<void>,
 ) {
   const toast = useToast()
 
@@ -152,7 +152,14 @@ export function useAuthForm<T extends AuthForm>(
     const phoneValid = validatePhoneNumber()
     const passwordValid = validatePassword(false)
     const confirmPasswordValid = validateConfirmPassword()
-    return firstNameValid && lastNameValid && emailValid && phoneValid && passwordValid && confirmPasswordValid
+    return (
+      firstNameValid &&
+      lastNameValid &&
+      emailValid &&
+      phoneValid &&
+      passwordValid &&
+      confirmPasswordValid
+    )
   }
 
   // Generic form submission
@@ -217,4 +224,3 @@ export function useAuthForm<T extends AuthForm>(
     clearErrors,
   }
 }
-

@@ -1,25 +1,27 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
+const userStore = useUserStore()
 const router = useRouter()
 const showUserMenu = ref(false)
 
 const isAuthenticated = computed(() => authStore.isAuthenticated)
-const currentUser = computed(() => authStore.currentUser)
+const currentUser = computed(() => userStore.user)
 
 const toggleUserMenu = () => {
   showUserMenu.value = !showUserMenu.value
 }
 
 const logout = () => {
-  authStore.logout()
+  authStore.clearAuthData()
+  userStore.clearUser()
   showUserMenu.value = false
   router.push('/')
 }
-
 
 // Cerrar menú al hacer clic fuera
 const handleClickOutside = (event: Event) => {
@@ -73,7 +75,12 @@ onUnmounted(() => {
             class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center space-x-2"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             <span>Crear Producto</span>
           </router-link>
@@ -91,7 +98,7 @@ onUnmounted(() => {
                   clip-rule="evenodd"
                 />
               </svg>
-              <span>{{ currentUser?.email || 'Usuario' }}</span>
+              <span>{{ currentUser?.given_name || 'Usuario' }}</span>
               <svg
                 class="w-4 h-4 transition-transform"
                 :class="{ 'rotate-180': showUserMenu }"
@@ -99,7 +106,12 @@ onUnmounted(() => {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
@@ -137,4 +149,3 @@ onUnmounted(() => {
     </div>
   </nav>
 </template>
-

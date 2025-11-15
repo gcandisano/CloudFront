@@ -24,4 +24,3 @@
 <script setup lang="ts">
 // Eye icon component for showing password visibility
 </script>
-

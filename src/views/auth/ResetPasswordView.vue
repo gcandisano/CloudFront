@@ -18,11 +18,7 @@
         <!-- Verification Code field -->
         <div>
           <label class="text-white mb-3 block text-center">Código de verificación</label>
-          <VerificationCodeInput
-            v-model="form.code"
-            :error="codeError"
-            :disabled="loading"
-          />
+          <VerificationCodeInput v-model="form.code" :error="codeError" :disabled="loading" />
           <p v-if="codeError" class="text-red-400 text-sm mt-2 text-center">{{ codeError }}</p>
         </div>
 
@@ -51,11 +47,7 @@
         />
 
         <!-- Submit button -->
-        <FormButton
-          type="submit"
-          :loading="loading"
-          :disabled="loading || !isFormValid"
-        >
+        <FormButton type="submit" :loading="loading" :disabled="loading || !isFormValid">
           Restablecer Contraseña
         </FormButton>
       </form>
@@ -149,7 +141,7 @@ const handleSubmit = async () => {
     })
     toast.success('Contraseña restablecida exitosamente')
     router.push('/login')
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Reset password error:', error)
     const errorMessage = error.message || 'Error al restablecer la contraseña'
@@ -171,7 +163,7 @@ const handleResendCode = async () => {
   try {
     await authService.resendPasswordResetCode(email.value)
     toast.success('Código reenviado. Revisa tu email.')
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Resend code error:', error)
     toast.error(error.message || 'Error al reenviar el código')
@@ -184,4 +176,3 @@ const handleBackToLogin = () => {
   router.push('/login')
 }
 </script>
-

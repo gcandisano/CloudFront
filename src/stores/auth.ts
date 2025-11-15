@@ -1,11 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { jwtDecode, type JwtPayload } from 'jwt-decode'
-import type {
-  CognitoIdTokenPayload,
-  TokenData,
-  CognitoUserInfo,
-} from '@/types/cognito'
+import type { CognitoIdTokenPayload, TokenData, CognitoUserInfo } from '@/types/cognito'
 
 export const useAuthStore = defineStore('auth', () => {
   // Token state
@@ -66,7 +62,7 @@ export const useAuthStore = defineStore('auth', () => {
   const setAuthData = (
     newAccessToken: string,
     newRefreshToken: string,
-    newIdToken: string
+    newIdToken: string,
   ): void => {
     accessToken.value = newAccessToken
     refreshToken.value = newRefreshToken

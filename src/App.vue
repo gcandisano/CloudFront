@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import NotificationToast from '@/components/NotificationToast.vue'
-import SimpleNavigation from './components/navbar/SimpleNavigation.vue';
+import SimpleNavigation from './components/navbar/SimpleNavigation.vue'
 </script>
 
 <template>

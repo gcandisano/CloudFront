@@ -61,6 +61,6 @@ export async function uploadToS3(file: File): Promise<S3UploadResponse> {
  * @returns Promise with array of upload results
  */
 export async function uploadMultipleToS3(files: File[]): Promise<S3UploadResponse[]> {
-  const uploadPromises = files.map(file => uploadToS3(file))
+  const uploadPromises = files.map((file) => uploadToS3(file))
   return Promise.all(uploadPromises)
 }
