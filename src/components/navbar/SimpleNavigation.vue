@@ -71,6 +71,7 @@ onUnmounted(() => {
         <div class="flex items-center space-x-3">
           <!-- Create Product Button -->
           <router-link
+            v-if="isAuthenticated"
             to="/product/create"
             class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center space-x-2"
           >

@@ -55,19 +55,14 @@ export function useAuthForm<T extends AuthForm>(
       ;(errors.value as any).password = 'La contraseña es requerida'
       return false
     }
-    if (isLogin) {
-      if (password.length < 6) {
-        ;(errors.value as any).password = 'La contraseña debe tener al menos 6 caracteres'
-        return false
-      }
-    } else {
-      if (password.length < 8) {
-        ;(errors.value as any).password = 'La contraseña debe tener al menos 8 caracteres'
-        return false
-      }
-      if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+    if (password.length < 8) {
+      ;(errors.value as any).password = 'La contraseña debe tener al menos 8 caracteres'
+      return false
+    }
+    if (!isLogin) {
+      if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9])/.test(password)) {
         ;(errors.value as any).password =
-          'La contraseña debe contener al menos una mayúscula, una minúscula y un número'
+          'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial'
         return false
       }
     }

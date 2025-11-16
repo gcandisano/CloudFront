@@ -31,7 +31,7 @@
           :error="errors.password"
           :disabled="loading"
           required
-          @blur="validatePassword"
+          @blur="validatePassword(true)"
         />
 
         <!-- Submit button -->

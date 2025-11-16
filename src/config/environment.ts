@@ -29,7 +29,7 @@ export function getEnvironmentConfig(): EnvironmentConfig {
   const requiredVars = [
     'userPoolId',
     'clientId',
-    's3Url',
+    /* 's3Url', */
   ] as const
 
   const missingVars = requiredVars.filter((key) => !config[key] || config[key].includes('<'))
