@@ -16,7 +16,11 @@ export interface RegisterForm {
   confirmPassword: string
 }
 
-export type AuthForm = LoginForm | RegisterForm
+export interface ForgotPasswordForm {
+  email: string
+}
+
+export type AuthForm = LoginForm | RegisterForm | ForgotPasswordForm
 
 export function useAuthForm<T extends AuthForm>(
   initialForm: T,
@@ -113,9 +117,9 @@ export function useAuthForm<T extends AuthForm>(
       ;(errors.value as any).phoneNumber = 'El teléfono es requerido'
       return false
     }
-    const cleanedPhone = phoneNumber.replace(/[\s\-\(\)\+]/g, '')
-    if (!/^\+?\d{10,15}$/.test(cleanedPhone)) {
-      ;(errors.value as any).phoneNumber = 'El teléfono debe tener entre 10 y 15 dígitos'
+    // E.164 format: starts with +, then 10-15 digits, first digit after + is not 0
+    if (!/^\+[1-9]\d{9,14}$/.test(phoneNumber.trim())) {
+      ;(errors.value as any).phoneNumber = 'El teléfono debe estar en formato internacional (E.164), por ejemplo: +12345678901'
       return false
     }
     ;(errors.value as any).phoneNumber = ''

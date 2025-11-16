@@ -64,65 +64,80 @@ export const useAuthStore = defineStore('auth', () => {
     newRefreshToken: string,
     newIdToken: string,
   ): void => {
-    accessToken.value = newAccessToken
-    refreshToken.value = newRefreshToken
-    idToken.value = newIdToken
+    try {
+      // Decode and extract data from tokens
+      const accessTokenPayload = jwtDecode<JwtPayload>(newAccessToken)
+      const idTokenPayload = jwtDecode<CognitoIdTokenPayload>(newIdToken)
 
-    // Decode and extract data from tokens
-    const accessTokenPayload = jwtDecode<JwtPayload>(newAccessToken)
-    const idTokenPayload = jwtDecode<CognitoIdTokenPayload>(newIdToken)
+      accessToken.value = newAccessToken
+      refreshToken.value = newRefreshToken
+      idToken.value = newIdToken
 
-    if (accessTokenPayload) {
-      accessTokenExp.value = accessTokenPayload.exp || null
-      accessTokenIssuedAt.value = accessTokenPayload.iat || null
-    }
-
-    if (idTokenPayload) {
-      idTokenExp.value = idTokenPayload.exp || null
-      idTokenIssuedAt.value = idTokenPayload.iat || null
-
-      // Extract user info from idToken
-      userInfo.value = {
-        sub: idTokenPayload.sub,
-        email: idTokenPayload.email || '',
-        email_verified: idTokenPayload.email_verified,
-        phone_number: idTokenPayload.phone_number,
-        given_name: idTokenPayload.given_name,
-        family_name: idTokenPayload.family_name,
-        username: idTokenPayload.username || idTokenPayload['cognito:username'],
-        'cognito:username': idTokenPayload['cognito:username'],
+      if (accessTokenPayload) {
+        accessTokenExp.value = accessTokenPayload.exp || null
+        accessTokenIssuedAt.value = accessTokenPayload.iat || null
       }
 
-      email.value = idTokenPayload.email || null
-      userId.value = idTokenPayload.sub
-      username.value =
-        idTokenPayload.username ||
-        idTokenPayload['cognito:username'] ||
-        idTokenPayload.email ||
-        null
+      if (idTokenPayload) {
+        idTokenExp.value = idTokenPayload.exp || null
+        idTokenIssuedAt.value = idTokenPayload.iat || null
+
+        // Extract user info from idToken
+        userInfo.value = {
+          sub: idTokenPayload.sub,
+          email: idTokenPayload.email || '',
+          email_verified: idTokenPayload.email_verified,
+          phone_number: idTokenPayload.phone_number,
+          given_name: idTokenPayload.given_name,
+          family_name: idTokenPayload.family_name,
+          username: idTokenPayload.username || idTokenPayload['cognito:username'],
+          'cognito:username': idTokenPayload['cognito:username'],
+        }
+
+        email.value = idTokenPayload.email || null
+        userId.value = idTokenPayload.sub
+        username.value =
+          idTokenPayload.username ||
+          idTokenPayload['cognito:username'] ||
+          idTokenPayload.email ||
+          null
+      }
+
+      // Set session metadata
+      loginTime.value = Date.now()
+      lastRefreshTime.value = Date.now()
+
+      // Persist to localStorage
+      localStorage.setItem('auth_accessToken', newAccessToken)
+      localStorage.setItem('auth_refreshToken', newRefreshToken)
+      localStorage.setItem('auth_idToken', newIdToken)
+    } catch (error) {
+      // If token decoding fails, clear auth data to prevent invalid state
+      console.error('Failed to decode tokens:', error)
+      clearAuthData()
+      throw new Error('Invalid token format. Please log in again.')
     }
-
-    // Set session metadata
-    loginTime.value = Date.now()
-    lastRefreshTime.value = Date.now()
-
-    // Persist to localStorage
-    localStorage.setItem('auth_accessToken', newAccessToken)
-    localStorage.setItem('auth_refreshToken', newRefreshToken)
-    localStorage.setItem('auth_idToken', newIdToken)
   }
 
   const updateAccessToken = (newAccessToken: string): void => {
-    accessToken.value = newAccessToken
-    const accessTokenPayload = jwtDecode(newAccessToken)
+    try {
+      const accessTokenPayload = jwtDecode<JwtPayload>(newAccessToken)
 
-    if (accessTokenPayload) {
-      accessTokenExp.value = accessTokenPayload.exp || null
-      accessTokenIssuedAt.value = accessTokenPayload.iat || null
+      // Only update token if decoding succeeds
+      accessToken.value = newAccessToken
+
+      if (accessTokenPayload) {
+        accessTokenExp.value = accessTokenPayload.exp || null
+        accessTokenIssuedAt.value = accessTokenPayload.iat || null
+      }
+
+      lastRefreshTime.value = Date.now()
+      localStorage.setItem('auth_accessToken', newAccessToken)
+    } catch (error) {
+      // If token decoding fails, don't update the token
+      console.error('Failed to decode access token:', error)
+      throw new Error('Invalid access token format. Please log in again.')
     }
-
-    lastRefreshTime.value = Date.now()
-    localStorage.setItem('auth_accessToken', newAccessToken)
   }
 
   const clearAuthData = (): void => {

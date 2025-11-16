@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthForm, type LoginForm } from '@/composables/useAuthForm'
+import { useAuthForm, type ForgotPasswordForm } from '@/composables/useAuthForm'
 import FormInput from '@/components/FormInput.vue'
 import FormButton from '@/components/FormButton.vue'
 import { useToast } from 'vue-toastification'
@@ -73,9 +73,8 @@ const toast = useToast()
 
 const emailSent = ref(false)
 
-const initialForm: LoginForm = {
+const initialForm: ForgotPasswordForm = {
   email: '',
-  password: '', // Not used in this view, but required by LoginForm type
 }
 
 const {
@@ -85,7 +84,7 @@ const {
   loading,
   validateEmail,
   handleSubmit: submitForm,
-} = useAuthForm(initialForm, async (formData: LoginForm) => {
+} = useAuthForm(initialForm, async (formData: ForgotPasswordForm) => {
   try {
     await authService.forgotPassword(formData.email)
     emailSent.value = true
