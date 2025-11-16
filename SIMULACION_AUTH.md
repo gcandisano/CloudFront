@@ -52,3 +52,4 @@ Con la autenticación simulada, puedes acceder a:
 
 Esta funcionalidad **solo funciona en modo desarrollo** (`npm run dev`). En producción, se requiere autenticación real con Cognito.
 
+
