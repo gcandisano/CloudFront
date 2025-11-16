@@ -1,4 +1,4 @@
-import type { PaginationParams } from "./api"
+import type { PaginationParams } from './api'
 
 // Review types
 export interface Review {

@@ -3,5 +3,7 @@ export const formatPrice = (price: number): string => {
     style: 'currency',
     currency: 'ARS',
     currencyDisplay: 'symbol',
-  }).format(price).replace('ARS', '$')
+  })
+    .format(price)
+    .replace('ARS', '$')
 }

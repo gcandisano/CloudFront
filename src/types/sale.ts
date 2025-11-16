@@ -1,4 +1,4 @@
-import type { PaginationParams } from "./api"
+import type { PaginationParams } from './api'
 
 // Sales and Orders types
 export interface Sale {

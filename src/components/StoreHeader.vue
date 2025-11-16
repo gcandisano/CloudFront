@@ -74,7 +74,7 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/a
 
 // Computed
 const isOwner = computed(() => {
-  return props.currentUser && props.store.storeId === props.currentUser.id
+  return props.currentUser && props.store.storeId === props.currentUser.sub
 })
 
 // Métodos
@@ -83,11 +83,11 @@ const getStoreDisplayName = (): string => {
     return props.store.storeName
   }
 
-  if (props.store.user.firstName) {
-    return `Tienda de ${props.store.user.firstName}`
+  if (props.store.user.given_name) {
+    return `Tienda de ${props.store.user.given_name}`
   }
 
-  return `Tienda ${props.store.storeId}`
+  return `Tienda ${props.store.user.sub}`
 }
 </script>
 

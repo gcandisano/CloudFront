@@ -19,7 +19,6 @@ export function useFormValidation() {
       isValid = false
     }
 
-
     if (form.description && form.description.length > 2048) {
       errors.value.description = 'La descripción no debe superar los 2048 caracteres'
       isValid = false

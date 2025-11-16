@@ -1,164 +1,224 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { User } from '@/types'
-import { authService } from '@/services/authService'
+import { jwtDecode, type JwtPayload } from 'jwt-decode'
+import type { CognitoIdTokenPayload, TokenData, CognitoUserInfo } from '@/types/cognito'
 
 export const useAuthStore = defineStore('auth', () => {
-  // Estado
-  const currentUser = ref<User | null>(null)
-  const token = ref<string | null>(localStorage.getItem('token'))
-  const loading = ref(false)
-  const error = ref<string | null>(null)
+  // Token state
+  const accessToken = ref<string | null>(null)
+  const refreshToken = ref<string | null>(null)
+  const idToken = ref<string | null>(null)
+
+  // Token expiration times
+  const accessTokenExp = ref<number | null>(null)
+  const idTokenExp = ref<number | null>(null)
+  const accessTokenIssuedAt = ref<number | null>(null)
+  const idTokenIssuedAt = ref<number | null>(null)
+
+  // User info extracted from tokens
+  const userInfo = ref<CognitoUserInfo | null>(null)
+  const email = ref<string | null>(null)
+  const userId = ref<string | null>(null)
+  const username = ref<string | null>(null)
+
+  // Session metadata
+  const loginTime = ref<number | null>(null)
+  const lastRefreshTime = ref<number | null>(null)
 
   // Computed properties
-  const isAuthenticated = computed(() => !!token.value && !!currentUser.value)
-  const isSeller = computed(() => currentUser.value?.is_seller || false)
-  const isActive = computed(() => currentUser.value?.is_active || false)
+  const isAuthenticated = computed(() => {
+    return !!accessToken.value && !!idToken.value && !!refreshToken.value
+  })
 
-  // Métodos
-  const initializeAuth = async (): Promise<void> => {
-    // Check if there are tokens in the URL (after Cognito callback)
-    const tokensFromUrl = authService.parseTokensFromUrl()
+  const isAccessTokenExpired = computed(() => {
+    if (!accessTokenExp.value) return false
+    return Date.now() >= accessTokenExp.value * 1000
+  })
 
-    if (tokensFromUrl) {
-      // Store tokens from URL
-      setAuthData(tokensFromUrl.accessToken, tokensFromUrl.refreshToken)
+  const isIdTokenExpired = computed(() => {
+    if (!idTokenExp.value) return false
+    return Date.now() >= idTokenExp.value * 1000
+  })
 
-      // Clear tokens from URL
-      authService.clearTokensFromUrl()
+  const isTokenExpired = computed(() => {
+    return isAccessTokenExpired.value || isIdTokenExpired.value
+  })
 
-      // Fetch user data
-      await getCurrentUser()
-    } else if (token.value) {
-      await getCurrentUser()
-    }
-  }
+  const timeUntilAccessTokenExpiry = computed(() => {
+    if (!accessTokenExp.value) return null
+    const expiryTime = accessTokenExp.value * 1000
+    const now = Date.now()
+    return expiryTime > now ? expiryTime - now : 0
+  })
 
-  const loginWithCognito = (): void => {
+  const timeUntilIdTokenExpiry = computed(() => {
+    if (!idTokenExp.value) return null
+    const expiryTime = idTokenExp.value * 1000
+    const now = Date.now()
+    return expiryTime > now ? expiryTime - now : 0
+  })
+
+  // Methods
+  const setAuthData = (
+    newAccessToken: string,
+    newRefreshToken: string,
+    newIdToken: string,
+  ): void => {
     try {
-      const loginUrl = authService.getCognitoLoginUrl()
-      window.location.href = loginUrl
-    } catch (err) {
-      console.error('Error redirecting to Cognito:', err)
-      error.value = 'Error de configuración de Cognito'
+      // Decode and extract data from tokens
+      const accessTokenPayload = jwtDecode<JwtPayload>(newAccessToken)
+      const idTokenPayload = jwtDecode<CognitoIdTokenPayload>(newIdToken)
+
+      accessToken.value = newAccessToken
+      refreshToken.value = newRefreshToken
+      idToken.value = newIdToken
+
+      if (accessTokenPayload) {
+        accessTokenExp.value = accessTokenPayload.exp || null
+        accessTokenIssuedAt.value = accessTokenPayload.iat || null
+      }
+
+      if (idTokenPayload) {
+        idTokenExp.value = idTokenPayload.exp || null
+        idTokenIssuedAt.value = idTokenPayload.iat || null
+
+        // Extract user info from idToken
+        userInfo.value = {
+          sub: idTokenPayload.sub,
+          email: idTokenPayload.email || '',
+          email_verified: idTokenPayload.email_verified,
+          phone_number: idTokenPayload.phone_number,
+          given_name: idTokenPayload.given_name,
+          family_name: idTokenPayload.family_name,
+          username: idTokenPayload.username || idTokenPayload['cognito:username'],
+          'cognito:username': idTokenPayload['cognito:username'],
+        }
+
+        email.value = idTokenPayload.email || null
+        userId.value = idTokenPayload.sub
+        username.value =
+          idTokenPayload.username ||
+          idTokenPayload['cognito:username'] ||
+          idTokenPayload.email ||
+          null
+      }
+
+      // Set session metadata
+      loginTime.value = Date.now()
+      lastRefreshTime.value = Date.now()
+
+      // Persist to localStorage
+      localStorage.setItem('auth_accessToken', newAccessToken)
+      localStorage.setItem('auth_refreshToken', newRefreshToken)
+      localStorage.setItem('auth_idToken', newIdToken)
+    } catch (error) {
+      // If token decoding fails, clear auth data to prevent invalid state
+      console.error('Failed to decode tokens:', error)
+      clearAuthData()
+      throw new Error('Invalid token format. Please log in again.')
     }
   }
 
-  const getCurrentUser = async (): Promise<void> => {
-    if (!token.value) return
-    loading.value = true
+  const updateAccessToken = (newAccessToken: string): void => {
     try {
-      const user = await authService.getCurrentUser(token.value)
-      currentUser.value = user
-    } catch (err) {
-      console.error('Error getting current user, logging out:', err)
-      await logout()
-    } finally {
-      loading.value = false
+      const accessTokenPayload = jwtDecode<JwtPayload>(newAccessToken)
+
+      // Only update token if decoding succeeds
+      accessToken.value = newAccessToken
+
+      if (accessTokenPayload) {
+        accessTokenExp.value = accessTokenPayload.exp || null
+        accessTokenIssuedAt.value = accessTokenPayload.iat || null
+      }
+
+      lastRefreshTime.value = Date.now()
+      localStorage.setItem('auth_accessToken', newAccessToken)
+    } catch (error) {
+      // If token decoding fails, don't update the token
+      console.error('Failed to decode access token:', error)
+      throw new Error('Invalid access token format. Please log in again.')
     }
   }
 
-  const logout = () => {
-    currentUser.value = null
-    token.value = null
-    localStorage.removeItem('token')
-    localStorage.removeItem('refreshToken')
+  const clearAuthData = (): void => {
+    accessToken.value = null
+    refreshToken.value = null
+    idToken.value = null
+    accessTokenExp.value = null
+    idTokenExp.value = null
+    accessTokenIssuedAt.value = null
+    idTokenIssuedAt.value = null
+    userInfo.value = null
+    email.value = null
+    userId.value = null
+    username.value = null
+    loginTime.value = null
+    lastRefreshTime.value = null
+
+    // Clear localStorage
+    localStorage.removeItem('auth_accessToken')
+    localStorage.removeItem('auth_refreshToken')
+    localStorage.removeItem('auth_idToken')
   }
 
-  const logoutWithCognito = () => {
-    logout()
-    
-    try {
-      const logoutUrl = authService.getCognitoLogoutUrl()
-      window.location.href = logoutUrl
-    } catch (err) {
-      console.error('Error redirecting to Cognito logout:', err)
-      error.value = 'Error al redirigir al logout de Cognito'
+  const initializeFromStorage = (): void => {
+    const storedAccessToken = localStorage.getItem('auth_accessToken')
+    const storedRefreshToken = localStorage.getItem('auth_refreshToken')
+    const storedIdToken = localStorage.getItem('auth_idToken')
+
+    if (storedAccessToken && storedRefreshToken && storedIdToken) {
+      setAuthData(storedAccessToken, storedRefreshToken, storedIdToken)
     }
   }
 
-  const clearError = (): void => {
-    error.value = null
-  }
-
-  // Set token and user (for Cognito authentication flow)
-  const setAuthData = (accessToken: string, refreshToken?: string, user?: User): void => {
-    token.value = accessToken
-    localStorage.setItem('token', accessToken)
-
-    if (refreshToken) {
-      localStorage.setItem('refreshToken', refreshToken)
+  const getTokenData = (): TokenData | null => {
+    if (!accessToken.value || !refreshToken.value || !idToken.value) {
+      return null
     }
 
-    if (user) {
-      currentUser.value = user
+    return {
+      accessToken: accessToken.value,
+      refreshToken: refreshToken.value,
+      idToken: idToken.value,
+      accessTokenExp: accessTokenExp.value || undefined,
+      idTokenExp: idTokenExp.value || undefined,
+      accessTokenIssuedAt: accessTokenIssuedAt.value || undefined,
+      idTokenIssuedAt: idTokenIssuedAt.value || undefined,
     }
   }
 
-  const changePassword = async (oldPassword: string, newPassword: string): Promise<void> => {
-    if (!token.value) {
-      throw new Error('User not authenticated to change password.')
-    }
-    loading.value = true
-    try {
-      await authService.changePassword(token.value, oldPassword, newPassword)
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to change password'
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-
-  const requestPasswordReset = async (email: string): Promise<void> => {
-    loading.value = true
-    try {
-      await authService.requestPasswordReset(email)
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to request password reset'
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-
-  const confirmPasswordReset = async (email: string, code: string, newPassword: string): Promise<void> => {
-    loading.value = true
-    try {
-      await authService.confirmPasswordReset(email, code, newPassword)
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to confirm password reset'
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Inicializar autenticación
-  initializeAuth()
+  // Initialize from storage on store creation
+  initializeFromStorage()
 
   return {
-    // Estado
-    currentUser,
-    token,
-    loading,
-    error,
+    // State
+    accessToken,
+    refreshToken,
+    idToken,
+    accessTokenExp,
+    idTokenExp,
+    accessTokenIssuedAt,
+    idTokenIssuedAt,
+    userInfo,
+    email,
+    userId,
+    username,
+    loginTime,
+    lastRefreshTime,
 
     // Computed
     isAuthenticated,
-    isSeller,
-    isActive,
+    isAccessTokenExpired,
+    isIdTokenExpired,
+    isTokenExpired,
+    timeUntilAccessTokenExpiry,
+    timeUntilIdTokenExpiry,
 
-    // Métodos
-    initializeAuth,
-    loginWithCognito,
-    logout,
-    logoutWithCognito,
-    changePassword,
-    requestPasswordReset,
-    confirmPasswordReset,
-    getCurrentUser,
-    clearError,
+    // Methods
     setAuthData,
+    updateAccessToken,
+    clearAuthData,
+    initializeFromStorage,
+    getTokenData,
   }
 })

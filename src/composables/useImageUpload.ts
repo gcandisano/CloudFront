@@ -40,7 +40,7 @@ export function useImageUpload() {
     try {
       const result = await uploadToS3(imageFile.value)
       console.log('result', result)
-      
+
       if (result.success && result.url) {
         uploadUrl.value = result.url
         return result.url
@@ -49,7 +49,8 @@ export function useImageUpload() {
         return null
       }
     } catch (error) {
-      imageError.value = error instanceof Error ? error.message : 'Error inesperado al subir la imagen'
+      imageError.value =
+        error instanceof Error ? error.message : 'Error inesperado al subir la imagen'
       return null
     } finally {
       isUploading.value = false
