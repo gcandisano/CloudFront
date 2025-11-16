@@ -1,7 +1,7 @@
 import type { CognitoUserInfo } from './cognito'
-import type { Store } from './product'
 
 export interface User extends CognitoUserInfo {
+  id: number
   is_seller: boolean
-  store?: Store
+  address?: string
 }

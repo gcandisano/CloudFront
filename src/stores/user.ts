@@ -23,7 +23,7 @@ export const useUserStore = defineStore('user', () => {
   const fetchCurrentUser = async (): Promise<void> => {
     const authStore = useAuthStore()
 
-    if (!authStore.accessToken) {
+    if (!authStore.idToken) {
       error.value = 'No access token available'
       return
     }
@@ -32,7 +32,7 @@ export const useUserStore = defineStore('user', () => {
     error.value = null
 
     try {
-      const response = await userService.getCurrentUser(authStore.accessToken)
+      const response = await userService.getCurrentUser(authStore.idToken)
 
       if (response.success && response.data) {
         user.value = response.data

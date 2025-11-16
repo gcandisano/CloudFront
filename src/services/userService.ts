@@ -8,7 +8,7 @@ import { API_BASE_URL } from '.'
  */
 async function getCurrentUser(accessToken: string): Promise<ApiResponse<User>> {
   try {
-    const url = `${API_BASE_URL}/api/users/me`
+    const url = `${API_BASE_URL}/users/profile`
 
     const response = await fetch(url, {
       method: 'GET',
