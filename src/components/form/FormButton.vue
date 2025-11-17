@@ -3,11 +3,10 @@
     :type="type"
     :disabled="disabled || loading"
     :class="[
-      'w-full font-medium rounded-lg py-2.5 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800',
+      'w-full font-medium rounded-lg px-6 py-2.5 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed',
       variant === 'primary'
-        ? 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed'
-        : 'bg-gray-700 text-white hover:bg-gray-600 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed',
-      variant === 'secondary' ? 'bg-gray-800 text-white hover:bg-gray-700 focus:ring-gray-500' : '',
+        ? 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500'
+        : 'bg-gray-700 text-white hover:bg-gray-600 focus:ring-gray-500 border border-gray-600',
     ]"
   >
     <div v-if="loading" class="flex items-center justify-center">

@@ -101,13 +101,6 @@ onUnmounted(() => {
               @click="toggleUserMenu"
               class="flex items-center space-x-2 text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
             >
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fill-rule="evenodd"
-                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                  clip-rule="evenodd"
-                />
-              </svg>
               <span>{{ currentUser?.given_name || 'Usuario' }}</span>
               <svg
                 class="w-4 h-4 transition-transform"
@@ -130,6 +123,28 @@ onUnmounted(() => {
               v-show="showUserMenu"
               class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-700"
             >
+              <router-link
+                to="/profile"
+                @click="showUserMenu = false"
+                class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
+              >
+                Mi Perfil
+              </router-link>
+              <router-link
+                :to="`/store/${currentUser?.id || ''}`"
+                @click="showUserMenu = false"
+                class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
+              >
+                Mi Tienda
+              </router-link>
+              <router-link
+                to="/orders"
+                @click="showUserMenu = false"
+                class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
+              >
+                Mis Compras
+              </router-link>
+              <div class="border-t border-gray-700 my-1"></div>
               <button
                 @click="logout"
                 class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"

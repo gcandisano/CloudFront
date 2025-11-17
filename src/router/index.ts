@@ -9,6 +9,7 @@ import RegisterView from '@/views/auth/RegisterView.vue'
 import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
 import ForgotPasswordView from '@/views/auth/ForgotPasswordView.vue'
 import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
+import ProfileView from '@/views/ProfileView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -70,14 +71,14 @@ const router = createRouter({
       component: ResetPasswordView,
       meta: { requiresGuest: true },
     },
-    // Rutas temporalmente comentadas hasta crear las vistas
-    /*
     {
       path: '/profile',
       name: 'profile',
-      component: () => import('@/views/ProfileView.vue'),
+      component: ProfileView,
       meta: { requiresAuth: true },
     },
+    // Rutas temporalmente comentadas hasta crear las vistas
+    /*
     {
       path: '/cart',
       name: 'cart',
