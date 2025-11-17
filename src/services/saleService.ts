@@ -2,8 +2,6 @@ import type {
   ApiResponse,
   CreateSaleForm,
   SaleCreationResponse,
-  SaleWithProducts,
-  SalesListResponse,
 } from '@/types'
 import { API_BASE_URL, getAuthHeaders } from '.'
 
@@ -67,94 +65,7 @@ async function createSale(
   }
 }
 
-async function fetchSales(
-  page: number = 1,
-  limit: number = 10
-): Promise<ApiResponse<SalesListResponse>> {
-  try {
-    const queryParams = new URLSearchParams()
-
-    // Transform and add query parameters
-    const pageNum = Math.max(1, page || 1)
-    const limitNum = Math.min(50, Math.max(1, limit || 10))
-
-    queryParams.append('page', pageNum.toString())
-    queryParams.append('limit', limitNum.toString())
-
-    const url = `${API_BASE_URL}/sales?${queryParams.toString()}`
-
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: getAuthHeaders(),
-    })
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const data = await response.json()
-
-    return {
-      data: {
-        sales: data.sales,
-        pagination: data.pagination,
-      },
-      success: true,
-    }
-  } catch (error) {
-    console.error('Error fetching sales:', error)
-    return {
-      data: {
-        sales: [],
-        pagination: {
-          page: 1,
-          limit: 10,
-          total: 0,
-          totalPages: 0,
-          hasNext: false,
-          hasPrev: false,
-        },
-      },
-      success: false,
-      message: 'Error fetching sales',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    }
-  }
-}
-
-async function fetchSale(id: string | number): Promise<ApiResponse<SaleWithProducts>> {
-  try {
-    const url = `${API_BASE_URL}/sales/${id}`
-
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: getAuthHeaders(),
-    })
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const data = await response.json()
-
-    return {
-      data: data,
-      success: true,
-    }
-  } catch (error) {
-    console.error('Error fetching sale:', error)
-    return {
-      data: null,
-      success: false,
-      message: 'Error fetching sale',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    }
-  }
-}
-
 export const saleService = {
   createSale,
-  fetchSales,
-  fetchSale,
 }
 

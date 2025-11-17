@@ -58,7 +58,7 @@
 import type { Review } from '@/types'
 import { formatDate } from '@/utils/formatting'
 import StarIcon from '@/components/icons/StarIcon.vue'
-import Pagination from '@/components/Pagination.vue'
+import Pagination from '@/components/ui/Pagination.vue'
 
 interface Props {
   reviews: Review[]

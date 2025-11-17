@@ -54,8 +54,8 @@
 import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useEmailVerification } from '@/composables/useEmailVerification'
-import VerificationCodeInput from '@/components/VerificationCodeInput.vue'
-import FormButton from '@/components/FormButton.vue'
+import VerificationCodeInput from '@/components/form/VerificationCodeInput.vue'
+import FormButton from '@/components/form/FormButton.vue'
 import { useToast } from 'vue-toastification'
 import { authService } from '@/services/authService'
 

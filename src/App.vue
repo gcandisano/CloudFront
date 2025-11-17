@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import NotificationToast from '@/components/NotificationToast.vue'
+import NotificationToast from '@/components/ui/NotificationToast.vue'
 import SimpleNavigation from './components/navbar/SimpleNavigation.vue'
 </script>
 

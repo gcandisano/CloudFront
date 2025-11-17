@@ -72,7 +72,7 @@
         <span v-if="!isLiked" class="-ms-2 me-2">
           <HeartIcon :filled="false" size="w-5 h-5" />
         </span>
-        <span v-else class="-ms-2 me-2 text-pink-500">
+        <span v-else class="-ms-2 me-2 text-red-500">
           <HeartIcon :filled="true" size="w-5 h-5" />
         </span>
         <span v-if="!isLiked">Agregar a favoritos</span>
