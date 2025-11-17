@@ -6,9 +6,9 @@ export interface SaleWithProducts {
   date: string
   total_amount: number
   status: string
-  note: string | null
-  invoice_id: number | null
-  address: string
+  note?: string
+  invoice_id?: number
+  address?: string
   products: SaleProduct[]
 }
 
@@ -18,9 +18,9 @@ export interface SaleProduct {
   unit_price: number
   total_price: number
   product_name: string
-  product_description: string | null
+  product_description?: string
   product_category: string
-  product_image_url: string | null
+  product_image_url?: string
 }
 
 export interface CreateSaleProduct {
