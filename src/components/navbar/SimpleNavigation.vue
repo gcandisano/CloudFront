@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
+import { authService } from '@/services/authService'
 
 const authStore = useAuthStore()
 const userStore = useUserStore()
@@ -16,11 +17,19 @@ const toggleUserMenu = () => {
   showUserMenu.value = !showUserMenu.value
 }
 
-const logout = () => {
-  authStore.clearAuthData()
-  userStore.clearUser()
-  showUserMenu.value = false
-  router.push('/')
+const logout = async () => {
+  try {
+    // Sign out from Cognito (clears Cognito session from local storage)
+    await authService.logout()
+  } catch (error) {
+    console.error('Error during logout:', error)
+  } finally {
+    // Clear local auth and user data
+    authStore.clearAuthData()
+    userStore.clearUser()
+    showUserMenu.value = false
+    router.push('/')
+  }
 }
 
 // Cerrar menú al hacer clic fuera

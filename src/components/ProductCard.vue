@@ -18,26 +18,13 @@
       <div class="border bg-gray-800 border-gray-700 rounded-lg shadow-xl">
         <!-- Imagen del producto -->
         <div
-          class="aspect-h-1 h-80 aspect-w-1 w-full overflow-hidden rounded-t-md bg-gray-200 lg:aspect-none transition-opacity duration-200"
+          class="transition-opacity duration-200"
           :class="{ 'opacity-75': isHoveringCard && !isHoveringFavorite }"
         >
-          <img
-            v-if="product.image_url && product.image_url.startsWith('http')"
-            :src="product.image_url"
-            :alt="product.name"
-            class="h-full w-full object-cover object-center lg:h-full lg:w-full"
-          />
-          <img
-            v-else-if="product.image_url"
-            :src="`${apiBaseUrl}/image/${product.image_url}`"
-            :alt="product.name"
-            class="h-full w-full object-cover object-center lg:h-full lg:w-full"
-          />
-          <img
-            v-else
-            src="https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-01-related-product-01.jpg"
-            :alt="`Foto de ${product.name}`"
-            class="h-full w-full object-cover object-center lg:h-full lg:w-full"
+          <ProductImage
+            :image-url="product.image_url"
+            :product-name="product.name"
+            size="card"
           />
         </div>
 
@@ -113,6 +100,7 @@ import type { Product } from '@/types'
 import { formatPrice } from '@/utils/formatting'
 import StarIcon from '@/components/icons/StarIcon.vue'
 import FavoriteButton from '@/components/FavoriteButton.vue'
+import ProductImage from '@/components/products/ProductImage.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
 import { favoriteService } from '@/services/favoriteService'
@@ -135,9 +123,6 @@ const emit = defineEmits<{
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const toast = useToast()
-
-// Configuración de la API
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
 
 // State
 const isHoveringCard = ref(false)

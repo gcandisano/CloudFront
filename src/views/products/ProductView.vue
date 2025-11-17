@@ -9,192 +9,17 @@
       <div class="max-w-screen-xl px-4 mx-auto 2xl:px-0">
         <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
           <!-- Imagen del producto -->
-          <div
-            class="relative transition-transform duration-300 rounded-lg transform hover:scale-103"
-          >
-            <img
-              v-if="product.image_url && product.image_url.startsWith('http')"
-              :src="product.image_url"
-              :alt="product.name"
-              class="w-4/5 mx-auto rounded-lg shadow-xxl shadow-gray-200"
-            />
-            <img
-              v-else-if="product.image_url"
-              :src="`${apiBaseUrl}/image/${product.image_url}`"
-              :alt="product.name"
-              class="w-4/5 mx-auto rounded-lg shadow-xxl shadow-gray-200"
-            />
-            <img
-              v-else
-              src="https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-01-related-product-01.jpg"
-              :alt="product.name"
-              class="rounded-lg shadow-xxl shadow-gray-200"
-            />
-          </div>
+          <ProductImage :image-url="product.image_url" :product-name="product.name" />
 
           <!-- Información del producto -->
-          <div class="mt-6 sm:mt-8 lg:mt-0">
-            <h1 class="text-xl font-semibold sm:text-2xl text-white">
-              {{ product.name }}
-            </h1>
-
-            <!-- Categoría -->
-            <p class="my-4">
-              Categoría:
-              <router-link
-                :to="`/?category=${product.category}`"
-                class="text-blue-400 hover:text-blue-500"
-              >
-                {{ product.category }}
-              </router-link>
-            </p>
-
-            <!-- Precio y rating -->
-            <div class="mt-4 sm:items-center sm:gap-4 sm:flex">
-              <p class="text-2xl font-extrabold sm:text-3xl text-white">
-                {{ formatPrice(product.price) }}
-              </p>
-
-              <div class="flex items-center gap-2 mt-2 sm:mt-0">
-                <div
-                  v-if="product.ratingCount && product.ratingCount > 0"
-                  class="flex items-center gap-1"
-                >
-                  <!-- Estrellas -->
-                  <template v-for="i in 5" :key="`star-${i}`">
-                    <svg
-                      :class="[
-                        'w-4 h-4',
-                        i <= Math.floor(product.rating || 0) ? 'text-yellow-300' : 'text-gray-500',
-                      ]"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"
-                      ></path>
-                    </svg>
-                  </template>
-
-                  <p class="text-sm font-medium leading-none text-gray-400">
-                    ({{ product.rating?.toFixed(2) || '0.00' }})
-                  </p>
-
-                  <a
-                    href="#reviews"
-                    class="text-sm font-medium leading-none underline hover:no-underline text-white"
-                  >
-                    {{
-                      product.ratingCount && product.ratingCount === 1
-                        ? '1 reseña'
-                        : `${product.ratingCount} reseñas`
-                    }}
-                  </a>
-                </div>
-
-                <div v-else>
-                  <p class="text-sm font-medium leading-none text-gray-400">Sin reseñas</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Botones de acción -->
-            <div
-              v-if="!isOwner && !product.paused && authStore.isAuthenticated"
-              class="mt-6 flex flex-col sm:flex-row gap-4 sm:items-center sm:mt-8"
-            >
-              <!-- Botón de favoritos -->
-              <button
-                @click="toggleFavorite"
-                class="w-full sm:w-auto flex items-center justify-center py-2.5 px-5 text-sm font-medium focus:outline-none rounded-lg border focus:z-10 focus:ring-4 focus:ring-gray-700 bg-gray-800 text-gray-400 border-gray-600 hover:text-white hover:bg-gray-700"
-              >
-                <span v-if="!isLiked" class="-ms-2 me-2">
-                  <HeartIcon :filled="false" size="w-5 h-5" />
-                </span>
-                <span v-else class="-ms-2 me-2 text-pink-500">
-                  <HeartIcon :filled="true" size="w-5 h-5" />
-                </span>
-                <span v-if="!isLiked">Agregar a favoritos</span>
-                <span v-else>Quitar de favoritos</span>
-              </button>
-
-              <!-- Botón de comprar ahora -->
-              <button
-                @click="buyNow"
-                class="w-full sm:w-auto text-white focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800 flex items-center justify-center"
-              >
-                <svg
-                  class="w-5 h-5 -ms-2 me-2"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 4h1.5L8 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm.75-3H7.5M11 7H6.312M17 4v6m-3-3h6"
-                  ></path>
-                </svg>
-                Comprar ahora
-              </button>
-            </div>
-
-            <div v-else-if="!isOwner && product.paused" class="mt-6 sm:mt-8">
-              <p class="mb-6 text-gray-400 break-words text-pretty">
-                Este producto no está disponible actualmente
-              </p>
-            </div>
-
-            <div v-else-if="isOwner" class="mt-6 sm:mt-8">
-              <router-link
-                to="/store"
-                class="text-white focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800 flex items-center justify-center w-full sm:w-auto"
-              >
-                Mis productos
-              </router-link>
-            </div>
-
-            <hr class="my-6 md:my-8 border-gray-800" />
-
-            <!-- Descripción -->
-            <p class="mb-6 text-gray-400 break-words text-pretty">
-              {{ product.description || 'Este producto no tiene descripción.' }}
-            </p>
-
-            <!-- Botón de la tienda -->
-            <!-- <router-link :to="`/store/${product.seller_id}`">
-              <button
-                class="text-white mx-auto my-4 w-full inline-flex items-center bg-gray-700 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm text-center"
-              >
-                <span class="h-20 w-20 rounded-full overflow-hidden p-2 mr-3">
-                  <img
-                    v-if="product.seller.store.storeImageId"
-                    :src="`${apiBaseUrl}/image/${product.seller.store.storeImageId}`"
-                    alt="Store Icon"
-                    class="rounded-full h-full w-full object-cover"
-                  />
-                  <img
-                    v-else
-                    :src="`${apiBaseUrl}/icon/store.svg`"
-                    alt="Store Icon"
-                    class="rounded-full h-full w-full object-cover"
-                  />
-                </span>
-                <span class="mx-2 pr-4 text-md">
-                  {{ getStoreDisplayName() }}
-                </span>
-              </button>
-            </router-link> -->
-          </div>
+          <ProductInfo
+            :product="product"
+            :is-owner="isOwner"
+            :is-authenticated="authStore.isAuthenticated"
+            :is-liked="isLiked"
+            @toggle-favorite="toggleFavorite"
+            @buy-now="buyNow"
+          />
         </div>
       </div>
     </section>
@@ -205,119 +30,16 @@
     </div>
 
     <!-- Sección de reseñas -->
-    <section
-      v-if="product && reviews.length > 0"
-      id="reviews"
-      class="py-8 antialiased bg-gray-900 mx-auto px-4 my-6 mt-10 max-w-screen-2xl"
-    >
-      <div class="mx-auto max-w-screen-xl px-4 2xl">
-        <h1 class="text-3xl font-bold tracking-tight text-white mr-2">Reseñas</h1>
-
-        <div class="mb-6 divide-y divide-gray-700">
-          <div v-for="review in reviews" :key="review.id" class="gap-3 py-6 sm:flex sm:items-start">
-            <div class="shrink-0 space-y-2 sm:w-48 md:w-72">
-              <div class="flex items-center gap-0.5">
-                <!-- Estrellas -->
-                <template v-for="i in 5" :key="`review-star-${i}`">
-                  <svg
-                    :class="[
-                      'h-4 w-4',
-                      i <= Math.floor(review.rating) ? 'text-yellow-300' : 'text-gray-500',
-                    ]"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"
-                    ></path>
-                  </svg>
-                </template>
-              </div>
-
-              <div class="space-y-0.5">
-                <p class="text-base font-semibold text-white">
-                  {{
-                    review.given_name || review.family_name
-                      ? `${review.given_name || ''} ${review.family_name || ''}`.trim()
-                      : 'Usuario anónimo'
-                  }}
-                </p>
-                <p class="text-sm font-normal text-gray-400">{{ formatDate(review.timestamp) }}</p>
-              </div>
-            </div>
-
-            <div class="mt-4 min-w-0 flex-1 space-y-4 sm:mt-0">
-              <p class="text-base font-normal text-gray-400">
-                {{ review.description || 'Sin descripción' }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <ProductReviews
+      v-if="product"
+      :reviews="reviews"
+      :current-page="reviewsCurrentPage"
+      :total-pages="reviewsTotalPages"
+      @page-changed="handleReviewsPageChange"
+    />
 
     <!-- Productos relacionados -->
-    <div
-      v-if="product && relatedProducts.length > 0"
-      class="mx-auto px-4 my-6 mt-10 max-w-screen-2xl"
-    >
-      <span class="m-4 mt-8 self-center text-2xl font-semibold whitespace-nowrap text-white">
-        También te puede gustar
-      </span>
-      <div class="mx-4 border-t border-gray-700 pt-6 mt-3 my-2 p-2">
-        <div
-          class="overflow-x-scroll scrollbar-hide mb-4 relative px-0.5"
-          style="overflow-y: hidden"
-        >
-          <div class="slider scrollbar-hide gap-4">
-            <div
-              v-for="relatedProduct in relatedProducts"
-              :key="relatedProduct.id"
-              class="group relative w-80"
-            >
-              <router-link :to="`/product/${relatedProduct.id}`">
-                <div class="border bg-gray-800 border-gray-700 rounded-lg shadow-xl">
-                  <div
-                    class="aspect-h-1 h-96 aspect-w-1 w-full overflow-hidden rounded-t-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80"
-                  >
-                    <img
-                      v-if="relatedProduct.image_url && relatedProduct.image_url.startsWith('http')"
-                      :src="relatedProduct.image_url"
-                      :alt="relatedProduct.name"
-                      class="h-full w-full object-cover object-center lg:h-full lg:w-full"
-                    />
-                    <img
-                      v-else-if="relatedProduct.image_url"
-                      :src="`${apiBaseUrl}/image/${relatedProduct.image_url}`"
-                      :alt="relatedProduct.name"
-                      class="h-full w-full object-cover object-center lg:h-full lg:w-full"
-                    />
-                    <img
-                      v-else
-                      src="https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-01-related-product-01.jpg"
-                      :alt="relatedProduct.name"
-                      class="h-full w-full object-cover object-center lg:h-full lg:w-full"
-                    />
-                  </div>
-                  <div class="mt-4 mx-4 mb-3 flex justify-between max-w-xs">
-                    <p class="truncate text-md font-medium text-white ml-0">
-                      {{ relatedProduct.name }}
-                    </p>
-                    <p class="text-md font-medium text-white">
-                      {{ formatPrice(relatedProduct.price) }}
-                    </p>
-                  </div>
-                </div>
-              </router-link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <RelatedProducts v-if="product" :products="relatedProducts" />
 
     <!-- Sale Review Modal -->
     <SaleReviewModal
@@ -335,14 +57,16 @@ import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAuthStore } from '@/stores/auth'
 import type { Product, Review } from '@/types'
-import { formatPrice, formatDate } from '@/utils/formatting'
 import { productService } from '@/services/productService'
 import { reviewService } from '@/services/reviewService'
 import { saleService } from '@/services/saleService'
 import { favoriteService } from '@/services/favoriteService'
 import { useToast } from 'vue-toastification'
 import SaleReviewModal from '@/components/SaleReviewModal.vue'
-import HeartIcon from '@/components/icons/HeartIcon.vue'
+import ProductImage from '@/components/products/ProductImage.vue'
+import ProductInfo from '@/components/products/ProductInfo.vue'
+import ProductReviews from '@/components/products/ProductReviews.vue'
+import RelatedProducts from '@/components/products/RelatedProducts.vue'
 import type { SaleProduct } from '@/types'
 
 const toast = useToast()
@@ -351,17 +75,19 @@ const toast = useToast()
 const route = useRoute()
 const userStore = useUserStore()
 const authStore = useAuthStore()
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
 
 // Estado reactivo
 const product = ref<Product | null>(null)
 const reviews = ref<Review[]>([])
 const relatedProducts = ref<Product[]>([])
 const isLiked = ref(false)
-const loading = ref(false)
+const loading = ref(true)
 const showReviewModal = ref(false)
 const saleProducts = ref<SaleProduct[]>([])
 const isTogglingFavorite = ref(false)
+const reviewsCurrentPage = ref(1)
+const reviewsTotalPages = ref(0)
+const reviewsLimit = ref(10)
 
 // Computed properties
 const isOwner = computed(() => {
@@ -400,14 +126,14 @@ const loadProduct = async () => {
   }
 }
 
-const loadReviews = async () => {
+const loadReviews = async (page: number = reviewsCurrentPage.value) => {
   try {
     if (!product.value) return
 
     const response = await reviewService.fetchProductReviews({
       product_id: product.value.id,
-      page: '1',
-      limit: '10',
+      page: page.toString(),
+      limit: reviewsLimit.value.toString(),
     })
 
     if (!response.success || !response.data) {
@@ -416,9 +142,21 @@ const loadReviews = async () => {
     }
 
     reviews.value = response.data.reviews
+    reviewsCurrentPage.value = response.data.pagination.page
+    reviewsTotalPages.value = response.data.pagination.totalPages
   } catch (error) {
     console.error('Error cargando reseñas:', error)
     toast.error('Error al cargar las reseñas')
+  }
+}
+
+const handleReviewsPageChange = async (page: number) => {
+  reviewsCurrentPage.value = page
+  await loadReviews(page)
+  // Scroll to reviews section
+  const reviewsSection = document.getElementById('reviews')
+  if (reviewsSection) {
+    reviewsSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 }
 
@@ -550,52 +288,8 @@ const buyNow = async () => {
 }
 
 const handleReviewsSubmitted = async () => {
-  await loadReviews()
+  reviewsCurrentPage.value = 1
+  await loadReviews(1)
   showReviewModal.value = false
 }
-
-/* const getStoreDisplayName = () => {
-  if (!product.value) return ''
-
-  const store = product.value.seller.store
-  const storeName = store.storeName
-
-  if (storeName) {
-    return storeName
-  }
-
-  if (product.value.seller.firstName) {
-    return `Tienda de ${product.value.seller.firstName}`
-  }
-
-  return `Tienda ${store.storeId}`
-} */
 </script>
-
-<style scoped>
-/* Estilos específicos de la vista si son necesarios */
-.shadow-xxl {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-}
-
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-.slider {
-  display: flex;
-  flex-direction: row;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-}
-
-.slider > div {
-  flex-shrink: 0;
-}
-</style>

@@ -37,17 +37,11 @@
             >
               <!-- Product Info -->
               <div class="flex items-start gap-4 mb-4">
-                <img
-                  v-if="product.product_image_url && product.product_image_url.startsWith('http')"
-                  :src="product.product_image_url"
-                  :alt="product.product_name"
-                  class="w-20 h-20 object-cover rounded-lg"
-                />
-                <img
-                  v-else-if="product.product_image_url"
-                  :src="`${apiBaseUrl}/image/${product.product_image_url}`"
-                  :alt="product.product_name"
-                  class="w-20 h-20 object-cover rounded-lg"
+                <ProductImage
+                  v-if="product.product_image_url"
+                  :image-url="product.product_image_url"
+                  :product-name="product.product_name"
+                  size="small"
                 />
                 <div
                   v-else
@@ -138,6 +132,7 @@ import { useToast } from 'vue-toastification'
 import CloseIcon from '@/components/icons/CloseIcon.vue'
 import ImagePlaceholderIcon from '@/components/icons/ImagePlaceholderIcon.vue'
 import StarIcon from '@/components/icons/StarIcon.vue'
+import ProductImage from '@/components/products/ProductImage.vue'
 
 interface Props {
   isOpen: boolean
@@ -156,7 +151,6 @@ const emit = defineEmits<{
 }>()
 
 const toast = useToast()
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
 const submitting = ref(false)
 
 // Initialize reviews array with empty reviews for each product
