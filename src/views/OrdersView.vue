@@ -4,7 +4,9 @@
       <h1 class="text-3xl font-bold text-white mb-8">Mis Compras</h1>
 
       <!-- Filters -->
-      <div class="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center sm:justify-between">
+      <div
+        class="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center sm:justify-between"
+      >
         <div class="w-full sm:w-auto">
           <label for="status-filter" class="block text-sm font-medium text-gray-300 mb-2">
             Filtrar por estado
@@ -41,7 +43,9 @@
 
       <!-- Loading state -->
       <div v-if="loading" class="flex justify-center items-center py-20">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
+        ></div>
       </div>
 
       <!-- Error state -->
@@ -66,7 +70,11 @@
       <div v-else class="text-center py-20">
         <p class="text-xl text-gray-400">No se encontraron compras</p>
         <p class="text-sm text-gray-500 mt-2">
-          {{ selectedStatus ? 'Intenta cambiar el filtro de estado' : 'Aún no has realizado ninguna compra' }}
+          {{
+            selectedStatus
+              ? 'Intenta cambiar el filtro de estado'
+              : 'Aún no has realizado ninguna compra'
+          }}
         </p>
       </div>
     </div>
@@ -133,7 +141,7 @@ watch(
 
     fetchSales()
   },
-  { deep: true }
+  { deep: true },
 )
 
 // Methods
@@ -142,9 +150,7 @@ const fetchSales = async () => {
   error.value = null
 
   try {
-    const page = route.query.page
-      ? Math.max(1, parseInt(String(route.query.page)) || 1)
-      : 1
+    const page = route.query.page ? Math.max(1, parseInt(String(route.query.page)) || 1) : 1
 
     const response = await saleService.fetchSales({
       page,
@@ -224,4 +230,3 @@ const updateQueryParams = (params: {
 <style scoped>
 /* Additional styles if needed */
 </style>
-

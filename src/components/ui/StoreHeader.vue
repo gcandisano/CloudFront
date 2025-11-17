@@ -3,49 +3,46 @@
     <!-- Cover photo -->
     <div class="relative">
       <img
-        v-if="store.coverImageId"
-        :src="`${apiBaseUrl}/image/${store.coverImageId}`"
-        :alt="store.storeName || store.storeId.toString()"
+        v-if="store.cover_image_url"
+        :src="store.cover_image_url"
+        :alt="store.store_name"
         class="w-full h-72 object-cover"
       />
-      <img
+      <div
         v-else
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwCZuPEj9h143VuSs4O2SLOSLzwsYKQnA1mXOqedRdfw&s"
-        alt="Cover Photo"
-        class="w-full h-72 object-cover"
-      />
+        class="w-full h-72 bg-gradient-to-r from-gray-700 to-gray-800 flex items-center justify-center"
+      >
+        <p class="text-gray-500 text-lg">Sin imagen de portada</p>
+      </div>
 
       <!-- Store image -->
-      <img
-        v-if="store.storeImageId"
-        :src="`${apiBaseUrl}/image/${store.storeImageId}`"
-        :alt="store.storeName || store.storeId.toString()"
-        class="w-1/5 md:w-36 aspect-square rounded-full absolute bottom-2 left-4 border-4 border-white z-10 shadow-lg py-1"
-      />
-      <img
-        v-else
-        :src="`${apiBaseUrl}/icon/store.svg`"
-        alt="Store Icon"
-        class="w-1/5 md:w-36 aspect-square rounded-full absolute bottom-2 left-4 border-4 border-white z-10 shadow-lg py-1"
-      />
+      <div class="absolute bottom-2 left-4">
+        <StoreImage
+          :store-image-url="store.store_image_url"
+          :store-name="store.store_name"
+          size="circle"
+        />
+      </div>
     </div>
 
     <!-- Store info -->
     <div class="flex items-center justify-between pl-6 mt-3">
       <div class="text-left text-5xl font-bold">
         <h1 class="text-white">
-          {{ getStoreDisplayName() }}
+          {{ store.store_name }}
         </h1>
       </div>
 
-      <!-- Botón "Ir a mi tienda" si el usuario es el propietario -->
-      <router-link
+      <!-- Botón de editar si el usuario es el propietario -->
+      <button
         v-if="isOwner"
-        to="/store"
-        class="text-white focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-lg px-6 py-3 mx-4 bg-blue-600 hover:bg-blue-700"
+        @click="$emit('edit')"
+        class="text-white focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-lg px-4 py-3 mx-4 bg-gray-700 hover:bg-gray-600 flex items-center gap-2 transition-colors"
+        aria-label="Editar tienda"
       >
-        Ir a mi tienda
-      </router-link>
+        <PencilIcon size="w-5 h-5" />
+        <span>Editar</span>
+      </button>
     </div>
 
     <!-- Descripción de la tienda -->
@@ -59,36 +56,33 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Store, User } from '@/types'
+import type { StoreResponse, User } from '@/types'
+import { useUserStore } from '@/stores/user'
+import StoreImage from '@/components/stores/StoreImage.vue'
+import PencilIcon from '@/components/icons/PencilIcon.vue'
 
 // Props
 interface Props {
-  store: Store
-  currentUser: User | null
+  store: StoreResponse
+  currentUser?: User | null
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  currentUser: null,
+})
 
-// Configuración de la API
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
+// Emits
+defineEmits<{
+  edit: []
+}>()
+
+const userStore = useUserStore()
 
 // Computed
 const isOwner = computed(() => {
-  return props.currentUser && props.store.storeId === props.currentUser.sub
+  const user = props.currentUser || userStore.user
+  return user && (user.id === props.store.store_id || false)
 })
-
-// Métodos
-const getStoreDisplayName = (): string => {
-  if (props.store.storeName) {
-    return props.store.storeName
-  }
-
-  if (props.store.user.given_name) {
-    return `Tienda de ${props.store.user.given_name}`
-  }
-
-  return `Tienda ${props.store.user.sub}`
-}
 </script>
 
 <style scoped>

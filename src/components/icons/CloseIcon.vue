@@ -18,4 +18,3 @@
 <script setup lang="ts">
 // Close icon component (X icon)
 </script>
-

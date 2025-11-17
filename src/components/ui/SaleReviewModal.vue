@@ -10,7 +10,9 @@
         @click.stop
       >
         <!-- Header -->
-        <div class="sticky top-0 bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
+        <div
+          class="sticky top-0 bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center"
+        >
           <h2 class="text-2xl font-bold text-white">Califica tus productos</h2>
           <button
             @click="handleClose"
@@ -72,9 +74,7 @@
                   >
                     <StarIcon
                       :class="[
-                        star <= (reviews[index].rating || 0)
-                          ? 'text-yellow-400'
-                          : 'text-gray-500',
+                        star <= (reviews[index].rating || 0) ? 'text-yellow-400' : 'text-gray-500',
                       ]"
                     />
                   </button>
@@ -102,7 +102,9 @@
         </div>
 
         <!-- Footer -->
-        <div class="sticky bottom-0 bg-gray-800 border-t border-gray-700 px-6 py-4 flex justify-end gap-3">
+        <div
+          class="sticky bottom-0 bg-gray-800 border-t border-gray-700 px-6 py-4 flex justify-end gap-3"
+        >
           <button
             @click="handleClose"
             class="px-4 py-2 text-gray-400 hover:text-white transition-colors"
@@ -115,7 +117,10 @@
             :disabled="submitting || !canSubmit"
             class="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center gap-2"
           >
-            <span v-if="submitting" class="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
+            <span
+              v-if="submitting"
+              class="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"
+            ></span>
             <span>{{ submitting ? 'Enviando...' : 'Enviar reseñas' }}</span>
           </button>
         </div>
@@ -166,7 +171,7 @@ watch(
       }))
     }
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 // Reset reviews when modal closes
@@ -179,7 +184,7 @@ watch(
         description: '',
       }))
     }
-  }
+  },
 )
 
 const setRating = (index: number, rating: number) => {
@@ -270,4 +275,3 @@ const handleSubmit = async () => {
   transform: scale(0.9);
 }
 </style>
-

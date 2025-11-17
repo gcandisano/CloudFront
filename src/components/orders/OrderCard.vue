@@ -1,22 +1,17 @@
 <template>
   <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-lg">
     <!-- Header: Order ID, Date, Status -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 pb-4 border-b border-gray-700">
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 pb-4 border-b border-gray-700"
+    >
       <div class="flex flex-col sm:flex-row sm:items-center sm:gap-4 mb-2 sm:mb-0">
-        <h3 class="text-lg font-semibold text-white">
-          Orden #{{ order.id }}
-        </h3>
+        <h3 class="text-lg font-semibold text-white">Orden #{{ order.id }}</h3>
         <span class="text-sm text-gray-400">
           {{ formatDate(order.date) }}
         </span>
       </div>
       <div class="flex items-center gap-3">
-        <span
-          :class="[
-            'px-3 py-1 rounded-full text-sm font-medium',
-            getStatusClass(order.status),
-          ]"
-        >
+        <span :class="['px-3 py-1 rounded-full text-sm font-medium', getStatusClass(order.status)]">
           {{ order.status }}
         </span>
         <span class="text-xl font-bold text-white">
@@ -53,10 +48,7 @@
             :alt="product.product_name"
             class="w-16 h-16 object-cover rounded-lg"
           />
-          <div
-            v-else
-            class="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center"
-          >
+          <div v-else class="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center">
             <span class="text-gray-500 text-xs">Sin imagen</span>
           </div>
         </div>
@@ -66,10 +58,7 @@
           <h4 class="text-sm font-medium text-white truncate">
             {{ product.product_name }}
           </h4>
-          <p
-            v-if="product.product_description"
-            class="text-xs text-gray-400 mt-1 line-clamp-2"
-          >
+          <p v-if="product.product_description" class="text-xs text-gray-400 mt-1 line-clamp-2">
             {{ product.product_description }}
           </p>
           <div class="flex items-center gap-2 mt-2">
@@ -77,9 +66,7 @@
               {{ product.product_category }}
             </span>
             <span class="text-xs text-gray-500">•</span>
-            <span class="text-xs text-gray-500">
-              Cantidad: {{ product.quantity }}
-            </span>
+            <span class="text-xs text-gray-500"> Cantidad: {{ product.quantity }} </span>
           </div>
         </div>
 
@@ -88,9 +75,7 @@
           <p class="text-sm font-medium text-white">
             {{ formatPrice(product.unit_price) }}
           </p>
-          <p class="text-xs text-gray-400">
-            Total: {{ formatPrice(product.total_price) }}
-          </p>
+          <p class="text-xs text-gray-400">Total: {{ formatPrice(product.total_price) }}</p>
         </div>
       </div>
     </div>
@@ -141,4 +126,3 @@ const getStatusClass = (status: string): string => {
   overflow: hidden;
 }
 </style>
-

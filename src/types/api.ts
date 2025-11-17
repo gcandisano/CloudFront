@@ -14,4 +14,3 @@ export interface PaginationResponse {
   hasNext: boolean
   hasPrev: boolean
 }
-

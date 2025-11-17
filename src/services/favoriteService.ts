@@ -47,4 +47,3 @@ async function toggleFavorite(productId: number): Promise<ApiResponse<ToggleFavo
 export const favoriteService = {
   toggleFavorite,
 }
-

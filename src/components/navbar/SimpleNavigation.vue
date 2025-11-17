@@ -2,16 +2,21 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { authService } from '@/services/authService'
 
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const router = useRouter()
+const route = useRoute()
 const showUserMenu = ref(false)
 
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const currentUser = computed(() => userStore.user)
+
+const isActiveRoute = (path: string) => {
+  return route.path === path
+}
 
 const toggleUserMenu = () => {
   showUserMenu.value = !showUserMenu.value
@@ -63,13 +68,23 @@ onUnmounted(() => {
           <div class="ml-10 flex items-baseline space-x-4">
             <router-link
               to="/"
-              class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              :class="[
+                'px-3 py-2 rounded-md text-sm font-medium',
+                isActiveRoute('/')
+                  ? 'text-blue-400 font-semibold'
+                  : 'text-gray-300 hover:text-white',
+              ]"
             >
               Inicio
             </router-link>
             <router-link
               to="/explore"
-              class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              :class="[
+                'px-3 py-2 rounded-md text-sm font-medium',
+                isActiveRoute('/explore')
+                  ? 'text-blue-400 font-semibold'
+                  : 'text-gray-300 hover:text-white',
+              ]"
             >
               Explorar
             </router-link>

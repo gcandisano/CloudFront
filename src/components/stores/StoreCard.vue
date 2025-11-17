@@ -7,10 +7,7 @@
     <router-link :to="`/store/${store.store_id}`">
       <div class="border bg-gray-800 border-gray-700 rounded-lg shadow-xl">
         <!-- Store Profile Picture -->
-        <div
-          class="transition-opacity duration-200"
-          :class="{ 'opacity-75': isHoveringCard }"
-        >
+        <div class="transition-opacity duration-200" :class="{ 'opacity-75': isHoveringCard }">
           <StoreImage
             :store-image-url="store.store_image_url"
             :store-name="store.store_name"
@@ -48,4 +45,3 @@ const isHoveringCard = ref(false)
 <style scoped>
 /* Estilos específicos del componente si son necesarios */
 </style>
-

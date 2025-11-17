@@ -24,4 +24,3 @@ withDefaults(defineProps<Props>(), {
   filled: false,
 })
 </script>
-

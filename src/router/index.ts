@@ -12,6 +12,7 @@ import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import OrdersView from '@/views/OrdersView.vue'
 import ExploreView from '@/views/ExploreView.vue'
+import StoreView from '@/views/StoreView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 
 const router = createRouter({
@@ -28,9 +29,9 @@ const router = createRouter({
       component: ExploreView,
     },
     {
-      path: '/store/:storeId?',
+      path: '/store/:id',
       name: 'store',
-      component: HomeView,
+      component: StoreView,
       props: true,
     },
     {

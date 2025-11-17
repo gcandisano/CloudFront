@@ -3,7 +3,7 @@
     <form @submit.prevent="handleSubmit" class="max-w-xl mx-auto flex my-auto">
       <!-- Botón de favoritos -->
       <button
-        v-if="isAuthenticated && !hasStore"
+        v-if="isAuthenticated"
         @click="toggleLiked"
         type="button"
         class="h-10 mx-2 flex items-center justify-center"
@@ -200,7 +200,6 @@ interface Props {
     liked?: boolean
   }
   isAuthenticated: boolean
-  hasStore: boolean
 }
 
 const props = defineProps<Props>()

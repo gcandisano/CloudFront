@@ -12,4 +12,3 @@ export interface StoresListResponse {
   stores: StoreResponse[]
   pagination: PaginationResponse
 }
-

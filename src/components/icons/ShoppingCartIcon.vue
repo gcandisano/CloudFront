@@ -24,4 +24,3 @@ withDefaults(defineProps<Props>(), {
   size: 'w-5 h-5',
 })
 </script>
-

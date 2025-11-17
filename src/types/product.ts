@@ -12,6 +12,9 @@ export interface Product {
   rating?: number
   ratingCount?: number
   is_favorite?: boolean
+  store_id: number
+  store_name: string
+  store_image_url: string | null
 }
 
 // Product form types
@@ -30,6 +33,7 @@ export interface ProductFilters {
   sort?: string
   liked?: boolean
   page?: number
+  limit?: number
   storeId?: string
 }
 

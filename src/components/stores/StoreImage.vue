@@ -13,12 +13,7 @@
       :alt="storeName"
       :class="finalImageClass"
     />
-    <img
-      v-else
-      :src="`${apiBaseUrl}/icon/store.svg`"
-      :alt="storeName"
-      :class="finalImageClass"
-    />
+    <img v-else :src="`${apiBaseUrl}/icon/store.svg`" :alt="storeName" :class="finalImageClass" />
   </div>
 </template>
 
@@ -83,4 +78,3 @@ const finalImageClass = computed(() => defaultImageClass.value)
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 </style>
-

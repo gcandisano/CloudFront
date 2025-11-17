@@ -12,14 +12,19 @@
           <ProductImage :image-url="product.image_url" :product-name="product.name" />
 
           <!-- Información del producto -->
-          <ProductInfo
-            :product="product"
-            :is-owner="isOwner"
-            :is-authenticated="authStore.isAuthenticated"
-            :is-liked="isLiked"
-            @toggle-favorite="toggleFavorite"
-            @buy-now="buyNow"
-          />
+          <div class="space-y-6">
+            <ProductInfo
+              :product="product"
+              :is-owner="isOwner"
+              :is-authenticated="authStore.isAuthenticated"
+              :is-liked="isLiked"
+              @toggle-favorite="toggleFavorite"
+              @buy-now="buyNow"
+            />
+
+            <!-- Store Info Card -->
+            <StoreInfoCard v-if="product" :product="product" />
+          </div>
         </div>
       </div>
     </section>
@@ -67,6 +72,7 @@ import ProductImage from '@/components/products/ProductImage.vue'
 import ProductInfo from '@/components/products/ProductInfo.vue'
 import ProductReviews from '@/components/products/ProductReviews.vue'
 import RelatedProducts from '@/components/products/RelatedProducts.vue'
+import StoreInfoCard from '@/components/products/StoreInfoCard.vue'
 import type { SaleProduct } from '@/types'
 
 const toast = useToast()
@@ -178,14 +184,10 @@ const loadRelatedProducts = async () => {
         rating: 0,
         ratingCount: 0,
         paused: false,
-        /* seller: {
-          firstName: 'Juan',
-          store: {
-            storeId: 'store1',
-            storeName: 'TechStore',
-            storeImageId: null,
-          },
-        }, */
+        store_id: 1,
+        store_name: 'TechStore',
+        store_image_url:
+          'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop',
       },
       {
         id: 3,
@@ -198,14 +200,10 @@ const loadRelatedProducts = async () => {
         rating: 0,
         ratingCount: 0,
         paused: false,
-        /* seller: {
-          firstName: 'María',
-          store: {
-            storeId: 'store2',
-            storeName: 'AudioWorld',
-            storeImageId: null,
-          },
-        }, */
+        store_id: 2,
+        store_name: 'AudioWorld',
+        store_image_url:
+          'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=400&h=400&fit=crop',
       },
       {
         id: 4,
@@ -217,6 +215,10 @@ const loadRelatedProducts = async () => {
         rating: 0,
         ratingCount: 0,
         paused: false,
+        store_id: 3,
+        store_name: 'GadgetZone',
+        store_image_url:
+          'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
       },
     ]
   } catch (error) {

@@ -16,11 +16,7 @@
         <section
           class="grid grid-cols-1 gap-x-6 gap-y-10 md:gap-y-20 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8 xl:gap-y-10"
         >
-          <StoreCard
-            v-for="store in stores"
-            :key="store.store_id"
-            :store="store"
-          />
+          <StoreCard v-for="store in stores" :key="store.store_id" :store="store" />
         </section>
 
         <!-- Pagination -->
@@ -87,7 +83,7 @@ watch(
 
     fetchStores()
   },
-  { deep: true }
+  { deep: true },
 )
 
 // Methods
@@ -96,9 +92,7 @@ const fetchStores = async () => {
   error.value = null
 
   try {
-    const page = route.query.page
-      ? Math.max(1, parseInt(String(route.query.page)) || 1)
-      : 1
+    const page = route.query.page ? Math.max(1, parseInt(String(route.query.page)) || 1) : 1
 
     const response = await storeService.fetchStores({
       page,
@@ -158,4 +152,3 @@ const updateQueryParams = (params: {
 <style scoped>
 /* Additional styles if needed */
 </style>
-

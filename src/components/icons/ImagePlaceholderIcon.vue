@@ -18,4 +18,3 @@
 <script setup lang="ts">
 // Image placeholder icon component
 </script>
-

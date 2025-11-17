@@ -35,11 +35,7 @@ async function initializeAuth() {
     const tokens = await authService.refreshSession()
     if (tokens) {
       // Update auth store with refreshed tokens
-      authStore.setAuthData(
-        tokens.accessToken,
-        tokens.refreshToken,
-        tokens.idToken
-      )
+      authStore.setAuthData(tokens.accessToken, tokens.refreshToken, tokens.idToken)
     } else {
       // No valid session, clear auth and user data
       authStore.clearAuthData()

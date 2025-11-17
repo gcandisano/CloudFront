@@ -1,14 +1,7 @@
-import type {
-  ApiResponse,
-  CreateSaleForm,
-  SaleCreationResponse,
-  SalesListResponse,
-} from '@/types'
+import type { ApiResponse, CreateSaleForm, SaleCreationResponse, SalesListResponse } from '@/types'
 import { API_BASE_URL, getAuthHeaders } from '.'
 
-async function createSale(
-  saleData: CreateSaleForm
-): Promise<ApiResponse<SaleCreationResponse>> {
+async function createSale(saleData: CreateSaleForm): Promise<ApiResponse<SaleCreationResponse>> {
   try {
     // Prepare JSON payload - only include fields that are provided
     const payload: {
@@ -130,4 +123,3 @@ export const saleService = {
   createSale,
   fetchSales,
 }
-

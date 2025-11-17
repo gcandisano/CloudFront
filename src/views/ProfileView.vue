@@ -5,7 +5,9 @@
 
       <!-- Loading state -->
       <div v-if="loading" class="flex justify-center items-center py-20">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
+        ></div>
       </div>
 
       <!-- Profile form -->
@@ -93,9 +95,7 @@ const address = ref('')
 const profilePictureRef = ref<InstanceType<typeof ProfilePictureUpload> | null>(null)
 const imageFile = ref<File | null>(null)
 
-const {
-  imageError,
-} = useImageUpload()
+const { imageError } = useImageUpload()
 
 const user = computed(() => userStore.user)
 
@@ -201,4 +201,3 @@ const handleSubmit = async () => {
   }
 }
 </script>
-

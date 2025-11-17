@@ -7,10 +7,7 @@
     <!-- Categoría -->
     <p class="my-4">
       Categoría:
-      <router-link
-        :to="`/?category=${product.category}`"
-        class="text-blue-400 hover:text-blue-500"
-      >
+      <router-link :to="`/?category=${product.category}`" class="text-blue-400 hover:text-blue-500">
         {{ product.category }}
       </router-link>
     </p>
@@ -22,10 +19,7 @@
       </p>
 
       <div class="flex items-center gap-2 mt-2 sm:mt-0">
-        <div
-          v-if="product.ratingCount && product.ratingCount > 0"
-          class="flex items-center gap-1"
-        >
+        <div v-if="product.ratingCount && product.ratingCount > 0" class="flex items-center gap-1">
           <!-- Estrellas -->
           <template v-for="i in 5" :key="`star-${i}`">
             <StarIcon
@@ -99,7 +93,7 @@
 
     <div v-else-if="isOwner" class="mt-6 sm:mt-8">
       <router-link
-        to="/store"
+        :to="`/store/${product.store_id}`"
         class="text-white focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800 flex items-center justify-center w-full sm:w-auto"
       >
         Mis productos
@@ -136,4 +130,3 @@ defineEmits<{
   'buy-now': []
 }>()
 </script>
-

@@ -21,4 +21,3 @@ const props = defineProps<{
 
 const containerClass = computed(() => props.class || '')
 </script>
-

@@ -76,4 +76,3 @@ const handlePageChange = (page: number) => {
   emit('pageChanged', page)
 }
 </script>
-

@@ -54,4 +54,3 @@ export async function uploadToS3(file: File): Promise<S3UploadResponse> {
     }
   }
 }
-

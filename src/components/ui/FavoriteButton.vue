@@ -1,9 +1,13 @@
 <template>
-  <button @click="handleClick" :class="[
-    'p-2 rounded-full transition-colors duration-200',
-    isFavorited ? 'text-red-500 hover:text-red-600' : 'text-gray-400 hover:text-red-500',
-    'hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-800'
-  ]" :aria-label="isFavorited ? 'Remove from favorites' : 'Add to favorites'">
+  <button
+    @click="handleClick"
+    :class="[
+      'p-2 rounded-full transition-colors duration-200',
+      isFavorited ? 'text-red-500 hover:text-red-600' : 'text-gray-400 hover:text-red-500',
+      'hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-800',
+    ]"
+    :aria-label="isFavorited ? 'Remove from favorites' : 'Add to favorites'"
+  >
     <HeartIcon :size="iconSize" :filled="isFavorited" />
   </button>
 </template>
@@ -33,7 +37,7 @@ watch(
   () => props.isFavorited,
   (newValue) => {
     isFavorited.value = newValue
-  }
+  },
 )
 
 const handleClick = (event: Event) => {
@@ -41,5 +45,4 @@ const handleClick = (event: Event) => {
   // Don't toggle locally - let parent handle the state
   emit('click')
 }
-
 </script>
