@@ -10,6 +10,7 @@ import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
 import ForgotPasswordView from '@/views/auth/ForgotPasswordView.vue'
 import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import OrdersView from '@/views/OrdersView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -77,18 +78,18 @@ const router = createRouter({
       component: ProfileView,
       meta: { requiresAuth: true },
     },
+    {
+      path: '/orders',
+      name: 'orders',
+      component: OrdersView,
+      meta: { requiresAuth: true },
+    },
     // Rutas temporalmente comentadas hasta crear las vistas
     /*
     {
       path: '/cart',
       name: 'cart',
       component: () => import('@/views/CartView.vue'),
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/orders',
-      name: 'orders',
-      component: () => import('@/views/OrdersView.vue'),
       meta: { requiresAuth: true },
     },
     */

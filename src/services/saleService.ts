@@ -2,6 +2,7 @@ import type {
   ApiResponse,
   CreateSaleForm,
   SaleCreationResponse,
+  SalesListResponse,
 } from '@/types'
 import { API_BASE_URL, getAuthHeaders } from '.'
 
@@ -65,7 +66,68 @@ async function createSale(
   }
 }
 
+async function fetchSales(params?: {
+  page?: number
+  limit?: number
+  status?: string
+}): Promise<ApiResponse<SalesListResponse>> {
+  try {
+    const queryParams = new URLSearchParams()
+
+    if (params?.page !== undefined) {
+      queryParams.append('page', params.page.toString())
+    }
+    if (params?.limit !== undefined) {
+      queryParams.append('limit', params.limit.toString())
+    }
+    if (params?.status !== undefined && params.status !== '') {
+      queryParams.append('status', params.status)
+    }
+
+    const url = `${API_BASE_URL}/sales${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    return {
+      data: {
+        sales: data.sales || [],
+        pagination: data.pagination,
+      },
+      success: true,
+    }
+  } catch (error) {
+    console.error('Error fetching sales:', error)
+    return {
+      data: {
+        sales: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0,
+          hasNext: false,
+          hasPrev: false,
+        },
+      },
+      success: false,
+      message: 'Error fetching sales',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    }
+  }
+}
+
 export const saleService = {
   createSale,
+  fetchSales,
 }
 

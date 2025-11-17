@@ -1,3 +1,5 @@
+import type { PaginationResponse } from './api'
+
 export interface SaleWithProducts {
   id: number
   user_id: number
@@ -35,4 +37,9 @@ export interface CreateSaleForm {
 export interface SaleCreationResponse {
   message: string
   sale: SaleWithProducts
+}
+
+export interface SalesListResponse {
+  sales: SaleWithProducts[]
+  pagination: PaginationResponse
 }
