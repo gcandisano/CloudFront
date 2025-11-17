@@ -105,7 +105,7 @@ const {
     })
 
     authStore.setAuthData(tokens.accessToken, tokens.refreshToken, tokens.idToken)
-    await userStore.fetchCurrentUser()
+    await userStore.fetchCurrentUser(true)
     router.push('/')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

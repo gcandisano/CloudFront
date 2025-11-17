@@ -5,7 +5,7 @@ import type {
   ProductsResponse,
   CreateProductForm,
 } from '@/types'
-import { API_BASE_URL } from '.'
+import { API_BASE_URL, getAuthHeaders } from '.'
 
 async function fetchProducts(filters: ProductFilters = {}): Promise<ApiResponse<ProductsResponse>> {
   try {
@@ -14,17 +14,22 @@ async function fetchProducts(filters: ProductFilters = {}): Promise<ApiResponse<
     // Convert filters to query parameters
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
-        queryParams.append(key, value.toString())
+        // For boolean values, only include if true
+        if (typeof value === 'boolean') {
+          if (value) {
+            queryParams.append(key, 'true')
+          }
+        } else {
+          queryParams.append(key, value.toString())
+        }
       }
     })
 
-    const url = `${API_BASE_URL}/api/products?${queryParams.toString()}`
+    const url = `${API_BASE_URL}/products?${queryParams.toString()}`
 
     const response = await fetch(url, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
     })
 
     if (!response.ok) {
@@ -33,21 +38,9 @@ async function fetchProducts(filters: ProductFilters = {}): Promise<ApiResponse<
 
     const data = await response.json()
 
-    // Transform the API response to match our frontend types
-    const transformedProducts: Product[] = data.products.map((product: Product) => ({
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      category: product.category,
-      price: product.price,
-      image_url: product.image_url,
-      paused: product.paused,
-      seller_sub: product.seller_sub,
-    }))
-
     return {
       data: {
-        products: transformedProducts,
+        products: data.products,
         pagination: data.pagination,
       },
       success: true,
@@ -75,13 +68,11 @@ async function fetchProducts(filters: ProductFilters = {}): Promise<ApiResponse<
 
 async function fetchProduct(id: string): Promise<ApiResponse<Product>> {
   try {
-    const url = `${API_BASE_URL}/api/products/${id}`
+    const url = `${API_BASE_URL}/products/${id}`
 
     const response = await fetch(url, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
     })
 
     if (!response.ok) {
@@ -113,36 +104,23 @@ async function createProduct(product: CreateProductForm): Promise<ApiResponse<Pr
       description: string
       category: string
       price: number
-      email: string
-      stock?: number
-      store_name?: string
       image_url?: string
     } = {
       name: product.name,
       description: product.description,
       category: product.category,
       price: product.price,
-      email: product.email,
     }
 
-    // Only add optional fields if they have values
-    if (product.stock !== undefined && product.stock !== null) {
-      payload.stock = product.stock
-    }
-    if (product.store_name) {
-      payload.store_name = product.store_name
-    }
     if (product.image_url) {
       payload.image_url = product.image_url
     }
 
-    const url = `${API_BASE_URL}/api/products`
+    const url = `${API_BASE_URL}/products`
 
     const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(payload),
     })
 

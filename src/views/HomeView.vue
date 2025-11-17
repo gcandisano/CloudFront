@@ -75,6 +75,7 @@ const filters = ref<ProductFilters>({
   category: (route.query.category as string) || '',
   sort: (route.query.sort as string) || 'rating desc',
   page: parseInt(route.query.page as string) || 1,
+  liked: route.query.liked === 'true' ? true : undefined,
 })
 
 // Computed properties
@@ -95,6 +96,7 @@ const loadProducts = async () => {
       sort: filters.value.sort || undefined,
       search: filters.value.search || undefined,
       category: filters.value.category || undefined,
+      liked: filters.value.liked,
     }
 
     const response = await productService.fetchProducts(productFilters)
@@ -103,6 +105,8 @@ const loadProducts = async () => {
       toast.error(response.message || 'Error al cargar los productos')
       return
     }
+
+    console.log(response.data)
 
     products.value = response.data?.products || []
     totalPages.value = response.data?.pagination.totalPages || 1

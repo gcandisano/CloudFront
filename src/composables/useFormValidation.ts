@@ -37,19 +37,6 @@ export function useFormValidation() {
       isValid = false
     }
 
-    if (!form.email?.trim()) {
-      errors.value.email = 'El email es requerido'
-      isValid = false
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      errors.value.email = 'El email no tiene un formato válido'
-      isValid = false
-    }
-
-    if (form.stock !== undefined && form.stock < 0) {
-      errors.value.stock = 'El stock no puede ser negativo'
-      isValid = false
-    }
-
     return isValid
   }
 

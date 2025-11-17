@@ -104,63 +104,27 @@
 
             <!-- Botones de acción -->
             <div
-              v-if="!isOwner && !product.paused"
+              v-if="!isOwner && !product.paused && authStore.isAuthenticated"
               class="mt-6 flex flex-col sm:flex-row gap-4 sm:items-center sm:mt-8"
             >
               <!-- Botón de favoritos -->
               <button
-                v-if="!isLiked"
                 @click="toggleFavorite"
                 class="w-full sm:w-auto flex items-center justify-center py-2.5 px-5 text-sm font-medium focus:outline-none rounded-lg border focus:z-10 focus:ring-4 focus:ring-gray-700 bg-gray-800 text-gray-400 border-gray-600 hover:text-white hover:bg-gray-700"
               >
-                <svg
-                  class="w-5 h-5 -ms-2 me-2"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1"
-                    d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"
-                  ></path>
-                </svg>
-                Agregar a favoritos
+                <span v-if="!isLiked" class="-ms-2 me-2">
+                  <HeartIcon :filled="false" size="w-5 h-5" />
+                </span>
+                <span v-else class="-ms-2 me-2 text-pink-500">
+                  <HeartIcon :filled="true" size="w-5 h-5" />
+                </span>
+                <span v-if="!isLiked">Agregar a favoritos</span>
+                <span v-else>Quitar de favoritos</span>
               </button>
 
+              <!-- Botón de comprar ahora -->
               <button
-                v-else
-                @click="toggleFavorite"
-                class="w-full sm:w-auto flex items-center justify-center py-2.5 px-5 text-sm font-medium focus:outline-none rounded-lg border focus:z-10 focus:ring-4 focus:ring-gray-700 bg-gray-800 text-gray-400 border-gray-600 hover:text-white hover:bg-gray-700"
-              >
-                <svg
-                  class="w-5 h-5 -ms-2 me-2"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  fill="pink"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1"
-                    d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"
-                  ></path>
-                </svg>
-                Quitar de favoritos
-              </button>
-
-              <!-- Botón de agregar al carrito -->
-              <button
-                @click="addToCart"
+                @click="buyNow"
                 class="w-full sm:w-auto text-white focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800 flex items-center justify-center"
               >
                 <svg
@@ -180,7 +144,7 @@
                     d="M4 4h1.5L8 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm.75-3H7.5M11 7H6.312M17 4v6m-3-3h6"
                   ></path>
                 </svg>
-                Agregar al carrito
+                Comprar ahora
               </button>
             </div>
 
@@ -276,14 +240,20 @@
 
               <div class="space-y-0.5">
                 <p class="text-base font-semibold text-white">
-                  {{ review.user.firstName }} {{ review.user.lastName }}
+                  {{
+                    review.given_name || review.family_name
+                      ? `${review.given_name || ''} ${review.family_name || ''}`.trim()
+                      : 'Usuario anónimo'
+                  }}
                 </p>
-                <p class="text-sm font-normal text-gray-400">{{ review.timestamp }}</p>
+                <p class="text-sm font-normal text-gray-400">{{ formatDate(review.timestamp) }}</p>
               </div>
             </div>
 
             <div class="mt-4 min-w-0 flex-1 space-y-4 sm:mt-0">
-              <p class="text-base font-normal text-gray-400">{{ review.description }}</p>
+              <p class="text-base font-normal text-gray-400">
+                {{ review.description || 'Sin descripción' }}
+              </p>
             </div>
           </div>
         </div>
@@ -348,6 +318,14 @@
         </div>
       </div>
     </div>
+
+    <!-- Sale Review Modal -->
+    <SaleReviewModal
+      :is-open="showReviewModal"
+      :products="saleProducts"
+      @close="showReviewModal = false"
+      @submitted="handleReviewsSubmitted"
+    />
   </div>
 </template>
 
@@ -355,16 +333,24 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { useAuthStore } from '@/stores/auth'
 import type { Product, Review } from '@/types'
-import { formatPrice } from '@/utils/formatting'
+import { formatPrice, formatDate } from '@/utils/formatting'
 import { productService } from '@/services/productService'
+import { reviewService } from '@/services/reviewService'
+import { saleService } from '@/services/saleService'
+import { favoriteService } from '@/services/favoriteService'
 import { useToast } from 'vue-toastification'
+import SaleReviewModal from '@/components/SaleReviewModal.vue'
+import HeartIcon from '@/components/icons/HeartIcon.vue'
+import type { SaleProduct } from '@/types'
 
 const toast = useToast()
 
 // Props y configuración
 const route = useRoute()
 const userStore = useUserStore()
+const authStore = useAuthStore()
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
 
 // Estado reactivo
@@ -373,18 +359,22 @@ const reviews = ref<Review[]>([])
 const relatedProducts = ref<Product[]>([])
 const isLiked = ref(false)
 const loading = ref(false)
+const showReviewModal = ref(false)
+const saleProducts = ref<SaleProduct[]>([])
+const isTogglingFavorite = ref(false)
 
 // Computed properties
 const isOwner = computed(() => {
   if (!product.value || !userStore.user) return false
-  return product.value.seller_sub === userStore.user.sub
+  return product.value.seller_id === userStore.user.id
 })
 
 // Lifecycle
 onMounted(async () => {
   await loadProduct()
   if (product.value) {
-    await Promise.all([loadReviews(), loadRelatedProducts()])
+    await loadReviews()
+    await loadRelatedProducts()
   }
 })
 
@@ -399,6 +389,10 @@ const loadProduct = async () => {
     }
 
     product.value = response.data
+    // Initialize isLiked from product data
+    if (product.value) {
+      isLiked.value = product.value.is_favorite ?? false
+    }
   } catch (error) {
     console.error('Error cargando producto:', error)
   } finally {
@@ -408,50 +402,23 @@ const loadProduct = async () => {
 
 const loadReviews = async () => {
   try {
-    // TODO: Descomentar cuando tengas la API lista
-    // reviews.value = await reviewStore.fetchProductReviews(route.params.id as string)
+    if (!product.value) return
 
-    // Datos hardcodeados de reseñas
-    reviews.value = [
-      {
-        id: '1',
-        rating: 5,
-        description:
-          'Excelente producto, muy buena calidad. La entrega fue rápida y el vendedor muy profesional.',
-        timestamp: '2024-01-15',
-        user: {
-          id: 'user1',
-          firstName: 'María',
-          lastName: 'García',
-        },
-      },
-      {
-        id: '2',
-        rating: 4,
-        description:
-          'Muy buen teléfono, la cámara es increíble. Solo le doy 4 estrellas porque la batería podría durar un poco más.',
-        timestamp: '2024-01-10',
-        user: {
-          id: 'user2',
-          firstName: 'Carlos',
-          lastName: 'López',
-        },
-      },
-      {
-        id: '3',
-        rating: 5,
-        description:
-          'Perfecto en todos los aspectos. Super rápido, excelente cámara y muy buena duración de batería.',
-        timestamp: '2024-01-05',
-        user: {
-          id: 'user3',
-          firstName: 'Ana',
-          lastName: 'Martínez',
-        },
-      },
-    ]
+    const response = await reviewService.fetchProductReviews({
+      product_id: product.value.id,
+      page: '1',
+      limit: '10',
+    })
+
+    if (!response.success || !response.data) {
+      toast.error(response.message || 'Error al cargar las reseñas')
+      return
+    }
+
+    reviews.value = response.data.reviews
   } catch (error) {
     console.error('Error cargando reseñas:', error)
+    toast.error('Error al cargar las reseñas')
   }
 }
 
@@ -468,7 +435,7 @@ const loadRelatedProducts = async () => {
         price: 1199.99,
         image_url:
           'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop',
-        seller_sub: '1',
+        seller_id: 1,
         category: 'Electronics',
         rating: 0,
         ratingCount: 0,
@@ -488,7 +455,7 @@ const loadRelatedProducts = async () => {
         price: 249.99,
         image_url:
           'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=400&h=400&fit=crop',
-        seller_sub: '2',
+        seller_id: 2,
         category: 'Electronics',
         rating: 0,
         ratingCount: 0,
@@ -507,7 +474,7 @@ const loadRelatedProducts = async () => {
         name: 'iPad Air',
         price: 599.99,
         image_url: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
-        seller_sub: '3',
+        seller_id: 3,
         category: 'Electronics',
         rating: 0,
         ratingCount: 0,
@@ -520,24 +487,71 @@ const loadRelatedProducts = async () => {
 }
 
 const toggleFavorite = async () => {
+  if (!product.value || isTogglingFavorite.value) return
+
   try {
-    // TODO: Implementar cuando tengas la API lista
-    // await productStore.toggleLike(product.value!.id)
-    isLiked.value = !isLiked.value
-    console.log('Favorito toggled:', isLiked.value)
+    isTogglingFavorite.value = true
+    const response = await favoriteService.toggleFavorite(product.value.id)
+
+    if (!response.success || !response.data) {
+      toast.error(response.message || 'Error al actualizar favorito')
+      return
+    }
+
+    isLiked.value = response.data.is_favorite
+    if (product.value) {
+      product.value.is_favorite = response.data.is_favorite
+    }
   } catch (error) {
     console.error('Error toggling favorite:', error)
+    toast.error('Error al actualizar favorito')
+  } finally {
+    isTogglingFavorite.value = false
   }
 }
 
-const addToCart = async () => {
+const buyNow = async () => {
   try {
-    // TODO: Implementar cuando tengas la API lista
-    // await cartStore.addToCart(product.value!.id)
-    console.log('Producto agregado al carrito:', product.value!.id)
+    if (!product.value) {
+      toast.error('No se pudo cargar la información del producto')
+      return
+    }
+
+    if (!authStore.isAuthenticated) {
+      toast.error('Debes iniciar sesión para realizar una compra')
+      return
+    }
+
+    const response = await saleService.createSale({
+      products: [
+        {
+          product_id: product.value.id,
+          quantity: 1,
+        },
+      ],
+    })
+
+    if (!response.success || !response.data) {
+      toast.error(response.message || 'Error al realizar la compra')
+      return
+    }
+
+    toast.success(response.data.message || 'Compra realizada exitosamente')
+
+    // Show review modal with the sale products
+    if (response.data.sale && response.data.sale.products) {
+      saleProducts.value = response.data.sale.products
+      showReviewModal.value = true
+    }
   } catch (error) {
-    console.error('Error adding to cart:', error)
+    console.error('Error comprando producto:', error)
+    toast.error('Error al realizar la compra')
   }
+}
+
+const handleReviewsSubmitted = async () => {
+  await loadReviews()
+  showReviewModal.value = false
 }
 
 /* const getStoreDisplayName = () => {

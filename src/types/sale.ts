@@ -1,6 +1,55 @@
-import type { PaginationParams } from './api'
+import type { PaginationResponse } from './api'
 
-// Sales and Orders types
+// Sale with products response type (matches saleWithProductsResponseSchema)
+export interface SaleWithProducts {
+  id: number
+  user_id: number
+  date: string
+  total_amount: number
+  status: string
+  note: string | null
+  invoice_id: number | null
+  address: string
+  products: SaleProduct[]
+}
+
+export interface SaleProduct {
+  product_id: number
+  quantity: number
+  unit_price: number
+  total_price: number
+  product_name: string
+  product_description: string | null
+  product_category: string
+  product_image_url: string | null
+}
+
+// Sale creation product item type
+export interface CreateSaleProduct {
+  product_id: number
+  quantity?: number
+}
+
+// Sale creation request type (matches createSaleSchema)
+export interface CreateSaleForm {
+  products: CreateSaleProduct[]
+  note?: string
+  address?: string
+}
+
+// Sale creation response type (matches saleCreationResponseSchema)
+export interface SaleCreationResponse {
+  message: string
+  sale: SaleWithProducts
+}
+
+// Sales list response type (matches salesListResponseSchema)
+export interface SalesListResponse {
+  sales: SaleWithProducts[]
+  pagination: PaginationResponse
+}
+
+// Legacy types (keeping for backward compatibility if needed)
 export interface Sale {
   id: number
   date: string
@@ -12,30 +61,10 @@ export interface Sale {
   products: SaleProduct[]
 }
 
-export interface SaleProduct {
-  product_id: number
-  price: number
-  amount: number
-  name: string
-  description?: string
-  first_name: string
-  last_name: string
-}
-
-// Sale form types
-export interface CreateSaleForm {
-  total: number
-  status?: string
-  note?: string
-  invoice_id?: number
-  address: string
-  cart_product_ids?: number[]
-}
-
 // Sale response types
 export interface SalesResponse {
   sales: Sale[]
-  pagination: PaginationParams
+  pagination: PaginationResponse
 }
 
 // Sale statistics

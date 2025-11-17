@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useUserStore } from '@/stores/user'
 import ProductView from '@/views/products/ProductView.vue'
 import CreateProductView from '@/views/products/CreateProductView.vue'
 import LoginView from '@/views/auth/LoginView.vue'
@@ -94,8 +95,14 @@ const router = createRouter({
 })
 
 // Guardia de navegación para rutas protegidas
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
+  const userStore = useUserStore()
+
+  // Initialize user data if authenticated but not loaded
+  if (authStore.isAuthenticated && !userStore.user) {
+    await userStore.initializeUser()
+  }
 
   if (to.meta.requiresGuest && authStore.isAuthenticated) {
     next('/')
