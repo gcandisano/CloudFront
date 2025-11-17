@@ -1,14 +1,4 @@
 import type { PaginationResponse } from './api'
-import type { User } from './user'
-
-export interface Store {
-  storeId: string
-  storeName?: string
-  description?: string
-  coverImageId?: string
-  storeImageId?: string
-  user: User
-}
 
 export interface Product {
   id: number

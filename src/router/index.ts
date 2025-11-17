@@ -11,6 +11,8 @@ import ForgotPasswordView from '@/views/auth/ForgotPasswordView.vue'
 import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import OrdersView from '@/views/OrdersView.vue'
+import ExploreView from '@/views/ExploreView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,7 +25,7 @@ const router = createRouter({
     {
       path: '/explore',
       name: 'explore',
-      component: HomeView,
+      component: ExploreView,
     },
     {
       path: '/store/:storeId?',
@@ -93,6 +95,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     */
+    // Catch-all route for 404 - must be last
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'notFound',
+      component: NotFoundView,
+    },
   ],
 })
 
