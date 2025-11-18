@@ -53,6 +53,13 @@
       @close="showReviewModal = false"
       @submitted="handleReviewsSubmitted"
     />
+
+    <!-- Add Address Modal -->
+    <AddAddressModal
+      :is-open="showAddressModal"
+      @close="showAddressModal = false"
+      @saved="handleAddressSaved"
+    />
   </div>
 </template>
 
@@ -68,6 +75,7 @@ import { saleService } from '@/services/saleService'
 import { favoriteService } from '@/services/favoriteService'
 import { useToast } from 'vue-toastification'
 import SaleReviewModal from '@/components/ui/SaleReviewModal.vue'
+import AddAddressModal from '@/components/ui/AddAddressModal.vue'
 import ProductImage from '@/components/products/ProductImage.vue'
 import ProductInfo from '@/components/products/ProductInfo.vue'
 import ProductReviews from '@/components/products/ProductReviews.vue'
@@ -89,11 +97,13 @@ const relatedProducts = ref<Product[]>([])
 const isLiked = ref(false)
 const loading = ref(true)
 const showReviewModal = ref(false)
+const showAddressModal = ref(false)
 const saleProducts = ref<SaleProduct[]>([])
 const isTogglingFavorite = ref(false)
 const reviewsCurrentPage = ref(1)
 const reviewsTotalPages = ref(0)
 const reviewsLimit = ref(10)
+const pendingPurchase = ref(false)
 
 // Computed properties
 const isOwner = computed(() => {
@@ -103,6 +113,10 @@ const isOwner = computed(() => {
 
 // Lifecycle
 onMounted(async () => {
+  // Initialize user data if authenticated
+  if (authStore.isAuthenticated) {
+    await userStore.initializeUser()
+  }
   await loadProduct()
   if (product.value) {
     await loadReviews()
@@ -262,6 +276,34 @@ const buyNow = async () => {
       return
     }
 
+    // Ensure user data is loaded
+    if (!userStore.user) {
+      await userStore.fetchCurrentUser()
+    }
+
+    // Check if user has an address
+    if (!userStore.user?.address || userStore.user.address.trim().length === 0) {
+      // Show address modal
+      pendingPurchase.value = true
+      showAddressModal.value = true
+      return
+    }
+
+    // Proceed with purchase
+    await proceedWithPurchase()
+  } catch (error) {
+    console.error('Error comprando producto:', error)
+    toast.error('Error al realizar la compra')
+  }
+}
+
+const proceedWithPurchase = async () => {
+  try {
+    if (!product.value) {
+      toast.error('No se pudo cargar la información del producto')
+      return
+    }
+
     const response = await saleService.createSale({
       products: [
         {
@@ -286,6 +328,17 @@ const buyNow = async () => {
   } catch (error) {
     console.error('Error comprando producto:', error)
     toast.error('Error al realizar la compra')
+  }
+}
+
+const handleAddressSaved = async () => {
+  // Close the address modal
+  showAddressModal.value = false
+
+  // If there was a pending purchase, proceed with it
+  if (pendingPurchase.value) {
+    pendingPurchase.value = false
+    await proceedWithPurchase()
   }
 }
 
