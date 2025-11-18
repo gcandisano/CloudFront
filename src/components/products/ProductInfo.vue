@@ -81,7 +81,7 @@
         <span class="-ms-2 me-2">
           <ShoppingCartIcon size="w-5 h-5" />
         </span>
-        Comprar ahora
+        Agregar al carrito
       </button>
     </div>
 

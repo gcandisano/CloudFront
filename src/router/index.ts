@@ -14,6 +14,7 @@ import OrdersView from '@/views/OrdersView.vue'
 import ExploreView from '@/views/ExploreView.vue'
 import StoreView from '@/views/StoreView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
+import CartView from '@/views/CartView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -87,15 +88,12 @@ const router = createRouter({
       component: OrdersView,
       meta: { requiresAuth: true },
     },
-    // Rutas temporalmente comentadas hasta crear las vistas
-    /*
     {
       path: '/cart',
       name: 'cart',
-      component: () => import('@/views/CartView.vue'),
+      component: CartView,
       meta: { requiresAuth: true },
     },
-    */
     // Catch-all route for 404 - must be last
     {
       path: '/:pathMatch(.*)*',

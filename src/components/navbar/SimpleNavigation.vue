@@ -2,17 +2,21 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
+import { useCartStore } from '@/stores/cart'
 import { useRouter, useRoute } from 'vue-router'
 import { authService } from '@/services/authService'
 
 const authStore = useAuthStore()
 const userStore = useUserStore()
+const cartStore = useCartStore()
 const router = useRouter()
 const route = useRoute()
 const showUserMenu = ref(false)
 
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const currentUser = computed(() => userStore.user)
+const cartItemCount = computed(() => cartStore.totalItems)
+const isSeller = computed(() => userStore.isSeller)
 
 const isActiveRoute = (path: string) => {
   return route.path === path
@@ -141,29 +145,110 @@ onUnmounted(() => {
               <router-link
                 to="/profile"
                 @click="showUserMenu = false"
-                class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
+                class="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
               >
+                <svg
+                  class="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
                 Mi Perfil
               </router-link>
               <router-link
+                v-if="isSeller"
                 :to="`/store/${currentUser?.id || ''}`"
                 @click="showUserMenu = false"
-                class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
+                class="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
               >
+                <svg
+                  class="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  />
+                </svg>
                 Mi Tienda
+              </router-link>
+              <router-link
+                to="/cart"
+                @click="showUserMenu = false"
+                class="flex items-center justify-between w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
+              >
+                <span class="flex items-center">
+                  <svg
+                    class="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                  Mi Carrito
+                </span>
+                <span
+                  v-if="cartItemCount > 0"
+                  class="bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full"
+                >
+                  {{ cartItemCount }}
+                </span>
               </router-link>
               <router-link
                 to="/orders"
                 @click="showUserMenu = false"
-                class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
+                class="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
               >
+                <svg
+                  class="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  />
+                </svg>
                 Mis Compras
               </router-link>
               <div class="border-t border-gray-700 my-1"></div>
               <button
                 @click="logout"
-                class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
+                class="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
               >
+                <svg
+                  class="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
                 Cerrar Sesión
               </button>
             </div>

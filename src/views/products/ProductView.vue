@@ -54,28 +54,21 @@
       @submitted="handleReviewsSubmitted"
     />
 
-    <!-- Add Address Modal -->
-    <AddAddressModal
-      :is-open="showAddressModal"
-      @close="showAddressModal = false"
-      @saved="handleAddressSaved"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAuthStore } from '@/stores/auth'
+import { useCartStore } from '@/stores/cart'
 import type { Product, Review } from '@/types'
 import { productService } from '@/services/productService'
 import { reviewService } from '@/services/reviewService'
-import { saleService } from '@/services/saleService'
 import { favoriteService } from '@/services/favoriteService'
 import { useToast } from 'vue-toastification'
 import SaleReviewModal from '@/components/ui/SaleReviewModal.vue'
-import AddAddressModal from '@/components/ui/AddAddressModal.vue'
 import ProductImage from '@/components/products/ProductImage.vue'
 import ProductInfo from '@/components/products/ProductInfo.vue'
 import ProductReviews from '@/components/products/ProductReviews.vue'
@@ -87,8 +80,10 @@ const toast = useToast()
 
 // Props y configuración
 const route = useRoute()
+const router = useRouter()
 const userStore = useUserStore()
 const authStore = useAuthStore()
+const cartStore = useCartStore()
 
 // Estado reactivo
 const product = ref<Product | null>(null)
@@ -97,13 +92,11 @@ const relatedProducts = ref<Product[]>([])
 const isLiked = ref(false)
 const loading = ref(true)
 const showReviewModal = ref(false)
-const showAddressModal = ref(false)
 const saleProducts = ref<SaleProduct[]>([])
 const isTogglingFavorite = ref(false)
 const reviewsCurrentPage = ref(1)
 const reviewsTotalPages = ref(0)
 const reviewsLimit = ref(10)
-const pendingPurchase = ref(false)
 
 // Computed properties
 const isOwner = computed(() => {
@@ -273,72 +266,19 @@ const buyNow = async () => {
 
     if (!authStore.isAuthenticated) {
       toast.error('Debes iniciar sesión para realizar una compra')
+      router.push('/login')
       return
     }
 
-    // Ensure user data is loaded
-    if (!userStore.user) {
-      await userStore.fetchCurrentUser()
-    }
+    // Add product to cart
+    await cartStore.addItem(product.value, 1)
+    toast.success('Producto agregado al carrito')
 
-    // Check if user has an address
-    if (!userStore.user?.address || userStore.user.address.trim().length === 0) {
-      // Show address modal
-      pendingPurchase.value = true
-      showAddressModal.value = true
-      return
-    }
-
-    // Proceed with purchase
-    await proceedWithPurchase()
+    // Navigate to cart
+    router.push('/cart')
   } catch (error) {
-    console.error('Error comprando producto:', error)
-    toast.error('Error al realizar la compra')
-  }
-}
-
-const proceedWithPurchase = async () => {
-  try {
-    if (!product.value) {
-      toast.error('No se pudo cargar la información del producto')
-      return
-    }
-
-    const response = await saleService.createSale({
-      products: [
-        {
-          product_id: product.value.id,
-          quantity: 1,
-        },
-      ],
-    })
-
-    if (!response.success || !response.data) {
-      toast.error(response.message || 'Error al realizar la compra')
-      return
-    }
-
-    toast.success(response.data.message || 'Compra realizada exitosamente')
-
-    // Show review modal with the sale products
-    if (response.data.sale && response.data.sale.products) {
-      saleProducts.value = response.data.sale.products
-      showReviewModal.value = true
-    }
-  } catch (error) {
-    console.error('Error comprando producto:', error)
-    toast.error('Error al realizar la compra')
-  }
-}
-
-const handleAddressSaved = async () => {
-  // Close the address modal
-  showAddressModal.value = false
-
-  // If there was a pending purchase, proceed with it
-  if (pendingPurchase.value) {
-    pendingPurchase.value = false
-    await proceedWithPurchase()
+    console.error('Error agregando producto al carrito:', error)
+    toast.error('Error al agregar producto al carrito')
   }
 }
 
