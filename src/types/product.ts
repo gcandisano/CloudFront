@@ -9,6 +9,7 @@ export interface Product {
   image_url?: string
   paused?: boolean
   seller_id?: number
+  stock?: number
   rating?: number
   ratingCount?: number
   is_favorite?: boolean
@@ -23,6 +24,7 @@ export interface CreateProductForm {
   description: string
   category: string
   price: number
+  stock?: number
   image_url?: string
 }
 

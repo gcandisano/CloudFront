@@ -122,6 +122,20 @@
             <p v-if="errors.price" class="text-red-400 text-sm mt-1">{{ errors.price }}</p>
           </div>
 
+          <!-- Stock -->
+          <div>
+            <label class="text-white mb-2 block">Stock</label>
+            <input
+              v-model.number="form.stock"
+              type="number"
+              min="0"
+              step="1"
+              class="w-full bg-gray-700 text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="0"
+            />
+            <p v-if="errors.stock" class="text-red-400 text-sm mt-1">{{ errors.stock }}</p>
+          </div>
+
           <!-- Botón de submit -->
           <button
             type="submit"
@@ -161,6 +175,8 @@ const { errors, validateProductForm } = useFormValidation()
 const toast = useToast()
 
 const form = ref<CreateProductForm>({} as CreateProductForm)
+// Default stock to 1
+form.value.stock = 1
 const loading = ref(false)
 const generalError = ref<string | null>(null)
 

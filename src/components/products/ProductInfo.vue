@@ -55,7 +55,7 @@
 
     <!-- Botones de acción -->
     <div
-      v-if="!isOwner && !product.paused && isAuthenticated"
+      v-if="!isOwner && !product.paused && isAuthenticated && (product.stock === undefined || product.stock > 0)"
       class="mt-6 flex flex-col sm:flex-row gap-4 sm:items-center sm:mt-8"
     >
       <!-- Botón de favoritos -->
@@ -83,6 +83,10 @@
         </span>
         Comprar ahora
       </button>
+    </div>
+
+    <div v-else-if="!isOwner && (product.stock !== undefined && product.stock <= 0)" class="mt-6 sm:mt-8">
+      <p class="mb-6 text-red-400 font-semibold">Agotado</p>
     </div>
 
     <div v-else-if="!isOwner && product.paused" class="mt-6 sm:mt-8">

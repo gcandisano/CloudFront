@@ -37,6 +37,14 @@ export function useFormValidation() {
       isValid = false
     }
 
+    // Validate stock if present
+    if (form.stock !== undefined) {
+      if (!Number.isInteger(form.stock) || form.stock < 0) {
+        errors.value.stock = 'El stock debe ser un número entero >= 0'
+        isValid = false
+      }
+    }
+
     return isValid
   }
 

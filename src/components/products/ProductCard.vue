@@ -7,7 +7,7 @@
     <!-- Favorite Button (outside router-link to prevent navigation) -->
     <div
       v-if="shouldShowFavoriteButton"
-      class="absolute top-2 right-2 z-10"
+      class="absolute top-2 right-2 z-30"
       @mouseenter="isHoveringFavorite = true"
       @mouseleave="isHoveringFavorite = false"
     >
@@ -18,14 +18,20 @@
       <div class="border bg-gray-800 border-gray-700 rounded-lg shadow-xl overflow-hidden">
         <!-- Imagen del producto -->
         <div
-          class="transition-opacity duration-200"
+          class="relative transition-opacity duration-200"
           :class="{ 'opacity-75': isHoveringCard && !isHoveringFavorite }"
         >
           <ProductImage :image-url="product.image_url" :product-name="product.name" size="card" />
+
+          <!-- Stock / availability badge: overlay at image top-left -->
+          <div v-if="product.stock !== undefined && product.stock <= 0" class="absolute top-2 left-2 z-20">
+            <span class="bg-red-600 text-white text-xs px-2 py-1 rounded">Agotado</span>
+          </div>
         </div>
 
         <!-- Container for product info and store info with smooth transitions -->
         <div class="relative mt-4 mx-4 mb-3 min-h-[60px]">
+
           <!-- Información del producto -->
           <div
             class="transition-all duration-300 absolute inset-0"

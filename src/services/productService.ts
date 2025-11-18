@@ -105,6 +105,7 @@ async function createProduct(product: CreateProductForm): Promise<ApiResponse<Pr
       category: string
       price: number
       image_url?: string
+      stock?: number
     } = {
       name: product.name,
       description: product.description,
@@ -114,6 +115,10 @@ async function createProduct(product: CreateProductForm): Promise<ApiResponse<Pr
 
     if (product.image_url) {
       payload.image_url = product.image_url
+    }
+
+    if (product.stock !== undefined && product.stock !== null) {
+      payload.stock = product.stock
     }
 
     const url = `${API_BASE_URL}/products`
