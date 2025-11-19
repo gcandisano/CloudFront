@@ -1,19 +1,11 @@
 <template>
   <div :class="finalContainerClass">
     <!-- Store profile picture -->
-    <img
-      v-if="storeImageUrl && storeImageUrl.startsWith('http')"
-      :src="storeImageUrl"
-      :alt="storeName"
-      :class="finalImageClass"
-    />
-    <img
-      v-else-if="storeImageUrl"
-      :src="`${apiBaseUrl}/image/${storeImageUrl}`"
-      :alt="storeName"
-      :class="finalImageClass"
-    />
-    <img v-else :src="`${apiBaseUrl}/icon/store.svg`" :alt="storeName" :class="finalImageClass" />
+    <img v-if="storeImageUrl && storeImageUrl.startsWith('http')" :src="storeImageUrl" :alt="storeName"
+      :class="finalImageClass" />
+    <img v-else-if="storeImageUrl" :src="`${apiBaseUrl}/image/${storeImageUrl}`" :alt="storeName"
+      :class="finalImageClass" />
+    <img v-else src="/store_icon.png" :alt="storeName" :class="finalImageClass" />
   </div>
 </template>
 
