@@ -96,6 +96,19 @@ export function register(data: RegisterData): Promise<{ user: CognitoUser }> {
         return
       }
 
+      // 👉 SUSCRIPCIÓN SNS: el frontend llama al backend ECS
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/notifications/subscribe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email }),
+      })
+      .then(() => {
+        // suscripción exitosa (opcional)
+      })
+      .catch((subscribeErr) => {
+        console.error("Error subscribing user to notifications:", subscribeErr);
+      });
+
       resolve({ user: result.user })
     })
   })
