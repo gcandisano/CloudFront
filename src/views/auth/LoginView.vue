@@ -70,9 +70,9 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useAuthForm, type LoginForm } from '@/composables/useAuthForm'
-import FormInput from '@/components/FormInput.vue'
-import PasswordInput from '@/components/PasswordInput.vue'
-import FormButton from '@/components/FormButton.vue'
+import FormInput from '@/components/form/FormInput.vue'
+import PasswordInput from '@/components/form/PasswordInput.vue'
+import FormButton from '@/components/form/FormButton.vue'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
@@ -105,7 +105,7 @@ const {
     })
 
     authStore.setAuthData(tokens.accessToken, tokens.refreshToken, tokens.idToken)
-    await userStore.fetchCurrentUser()
+    await userStore.fetchCurrentUser(true)
     router.push('/')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

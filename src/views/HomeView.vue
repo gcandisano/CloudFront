@@ -1,14 +1,10 @@
 <template>
   <div class="min-h-screen bg-gray-900">
-    <!-- Header de tienda (cuando se está viendo una tienda específica) -->
-    <StoreHeader v-if="store" :store="store" :current-user="currentUser" />
-
     <main class="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:max-w-7xl lg:px-8">
       <!-- Formulario de búsqueda y filtros -->
       <SearchFilters
         :current-filters="filters"
         :is-authenticated="isAuthenticated"
-        :has-store="!!store"
         @filters-changed="handleFiltersChange"
       />
 
@@ -20,7 +16,7 @@
           v-for="product in products"
           :key="product.id"
           :product="product"
-          :show-store="!!store"
+          :show-store-on-hover="true"
         />
       </section>
 
@@ -43,22 +39,19 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import StoreHeader from '@/components/StoreHeader.vue'
-import SearchFilters from '@/components/SearchFilters.vue'
-import ProductCard from '@/components/ProductCard.vue'
-import Pagination from '@/components/Pagination.vue'
+import SearchFilters from '@/components/ui/SearchFilters.vue'
+import ProductCard from '@/components/products/ProductCard.vue'
+import Pagination from '@/components/ui/Pagination.vue'
 import { useAuthStore } from '@/stores/auth'
 import { productService } from '@/services/productService'
-import type { Product, Store, ProductFilters } from '@/types'
+import type { Product, ProductFilters } from '@/types'
 import { useToast } from 'vue-toastification'
-import { useUserStore } from '@/stores/user'
 
 // Composables
 const toast = useToast()
 
 // Stores
 const authStore = useAuthStore()
-const userStore = useUserStore()
 
 // Router
 const route = useRoute()
@@ -66,7 +59,6 @@ const router = useRouter()
 
 // Estado reactivo
 const products = ref<Product[]>([])
-const store = ref<Store | null>(null)
 const currentPage = ref(1)
 const totalPages = ref(1)
 const loading = ref(false)
@@ -75,11 +67,11 @@ const filters = ref<ProductFilters>({
   category: (route.query.category as string) || '',
   sort: (route.query.sort as string) || 'rating desc',
   page: parseInt(route.query.page as string) || 1,
+  liked: route.query.liked === 'true' ? true : undefined,
 })
 
 // Computed properties
 const isAuthenticated = computed(() => authStore.isAuthenticated)
-const currentUser = computed(() => userStore.user)
 
 onMounted(async () => {
   await loadProducts()
@@ -95,6 +87,7 @@ const loadProducts = async () => {
       sort: filters.value.sort || undefined,
       search: filters.value.search || undefined,
       category: filters.value.category || undefined,
+      liked: filters.value.liked,
     }
 
     const response = await productService.fetchProducts(productFilters)
@@ -103,6 +96,8 @@ const loadProducts = async () => {
       toast.error(response.message || 'Error al cargar los productos')
       return
     }
+
+    console.log(response.data)
 
     products.value = response.data?.products || []
     totalPages.value = response.data?.pagination.totalPages || 1

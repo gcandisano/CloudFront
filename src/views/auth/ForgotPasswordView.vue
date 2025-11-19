@@ -63,8 +63,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthForm, type ForgotPasswordForm } from '@/composables/useAuthForm'
-import FormInput from '@/components/FormInput.vue'
-import FormButton from '@/components/FormButton.vue'
+import FormInput from '@/components/form/FormInput.vue'
+import FormButton from '@/components/form/FormButton.vue'
 import { useToast } from 'vue-toastification'
 import { authService } from '@/services/authService'
 

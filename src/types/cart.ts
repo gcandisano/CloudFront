@@ -1,28 +1,19 @@
-// Cart types
+import type { Product } from './product'
+
 export interface CartItem {
-  id: string
   product_id: number
-  amount: number
-  product: {
-    name: string
-    price: number
-    stock: number
-  }
-  item_total?: number
+  quantity: number
+}
+
+export interface CartItemWithProduct extends CartItem {
+  product: Product
 }
 
 export interface CartResponse {
-  cart: CartItem[]
-  total: number
-  item_count: number
+  items: CartItemWithProduct[]
 }
 
-// Cart form types
-export interface AddToCartForm {
-  product_id: number
-  amount: number
+export interface UpdateCartRequest {
+  items: CartItem[]
 }
 
-export interface UpdateCartItemForm {
-  amount: number
-}

@@ -114,7 +114,8 @@ export function useAuthForm<T extends AuthForm>(
     }
     // E.164 format: starts with +, then 10-15 digits, first digit after + is not 0
     if (!/^\+[1-9]\d{9,14}$/.test(phoneNumber.trim())) {
-      ;(errors.value as any).phoneNumber = 'El teléfono debe estar en formato internacional (E.164), por ejemplo: +12345678901'
+      ;(errors.value as any).phoneNumber =
+        'El teléfono debe estar en formato internacional (E.164), por ejemplo: +12345678901'
       return false
     }
     ;(errors.value as any).phoneNumber = ''

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useUserStore } from '@/stores/user'
 import ProductView from '@/views/products/ProductView.vue'
 import CreateProductView from '@/views/products/CreateProductView.vue'
 import LoginView from '@/views/auth/LoginView.vue'
@@ -8,6 +9,12 @@ import RegisterView from '@/views/auth/RegisterView.vue'
 import VerifyEmailView from '@/views/auth/VerifyEmailView.vue'
 import ForgotPasswordView from '@/views/auth/ForgotPasswordView.vue'
 import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
+import ProfileView from '@/views/ProfileView.vue'
+import OrdersView from '@/views/OrdersView.vue'
+import ExploreView from '@/views/ExploreView.vue'
+import StoreView from '@/views/StoreView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
+import CartView from '@/views/CartView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,12 +27,12 @@ const router = createRouter({
     {
       path: '/explore',
       name: 'explore',
-      component: HomeView,
+      component: ExploreView,
     },
     {
-      path: '/store/:storeId?',
+      path: '/store/:id',
       name: 'store',
-      component: HomeView,
+      component: StoreView,
       props: true,
     },
     {
@@ -69,33 +76,42 @@ const router = createRouter({
       component: ResetPasswordView,
       meta: { requiresGuest: true },
     },
-    // Rutas temporalmente comentadas hasta crear las vistas
-    /*
     {
       path: '/profile',
       name: 'profile',
-      component: () => import('@/views/ProfileView.vue'),
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/cart',
-      name: 'cart',
-      component: () => import('@/views/CartView.vue'),
+      component: ProfileView,
       meta: { requiresAuth: true },
     },
     {
       path: '/orders',
       name: 'orders',
-      component: () => import('@/views/OrdersView.vue'),
+      component: OrdersView,
       meta: { requiresAuth: true },
     },
-    */
+    {
+      path: '/cart',
+      name: 'cart',
+      component: CartView,
+      meta: { requiresAuth: true },
+    },
+    // Catch-all route for 404 - must be last
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'notFound',
+      component: NotFoundView,
+    },
   ],
 })
 
 // Guardia de navegación para rutas protegidas
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
+  const userStore = useUserStore()
+
+  // Initialize user data if authenticated but not loaded
+  if (authStore.isAuthenticated && !userStore.user) {
+    await userStore.initializeUser()
+  }
 
   if (to.meta.requiresGuest && authStore.isAuthenticated) {
     next('/')

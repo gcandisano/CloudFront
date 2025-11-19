@@ -96,6 +96,19 @@ export function register(data: RegisterData): Promise<{ user: CognitoUser }> {
         return
       }
 
+      // 👉 SUSCRIPCIÓN SNS: el frontend llama al backend ECS
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/notifications/subscribe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email }),
+      })
+      .then(() => {
+        // suscripción exitosa (opcional)
+      })
+      .catch((subscribeErr) => {
+        console.error("Error subscribing user to notifications:", subscribeErr);
+      });
+
       resolve({ user: result.user })
     })
   })
@@ -211,6 +224,74 @@ export function resendPasswordResetCode(email: string): Promise<void> {
   return forgotPassword(email)
 }
 
+/**
+ * Refresh the current user session by calling getSession()
+ * This will automatically refresh tokens if they are expired or about to expire
+ * @returns Promise that resolves with refreshed Cognito tokens, or null if no valid session
+ */
+export function refreshSession(): Promise<CognitoTokens | null> {
+  return new Promise((resolve, reject) => {
+    const cognitoUser = userPool.getCurrentUser()
+
+    if (!cognitoUser) {
+      // No current user, resolve with null (user is not logged in)
+      resolve(null)
+      return
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    cognitoUser.getSession((err: any, session: any) => {
+      if (err) {
+        // If there's an error (e.g., no valid session), resolve with null
+        // This is not necessarily a failure - user might just not be logged in
+        resolve(null)
+        return
+      }
+
+      if (!session || !session.isValid()) {
+        resolve(null)
+        return
+      }
+
+      try {
+        const accessToken = session.getAccessToken().getJwtToken()
+        const idToken = session.getIdToken().getJwtToken()
+        const refreshToken = session.getRefreshToken().getToken()
+
+        resolve({
+          accessToken,
+          idToken,
+          refreshToken,
+        })
+      } catch (error) {
+        reject(error)
+      }
+    })
+  })
+}
+
+/**
+ * Logout the current user by signing out from Cognito
+ * This clears the Cognito session from local storage
+ * @returns Promise that resolves when logout is complete
+ */
+export function logout(): Promise<void> {
+  return new Promise((resolve) => {
+    const cognitoUser = userPool.getCurrentUser()
+
+    if (!cognitoUser) {
+      // No current user, already logged out
+      resolve()
+      return
+    }
+
+    cognitoUser.signOut(() => {
+      // Sign out successful
+      resolve()
+    })
+  })
+}
+
 export const authService = {
   login,
   register,
@@ -219,4 +300,6 @@ export const authService = {
   verifyEmail,
   resendVerificationCode,
   resendPasswordResetCode,
+  refreshSession,
+  logout,
 }

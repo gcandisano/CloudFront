@@ -3,26 +3,16 @@
     <form @submit.prevent="handleSubmit" class="max-w-xl mx-auto flex my-auto">
       <!-- Botón de favoritos -->
       <button
-        v-if="isAuthenticated && !hasStore"
+        v-if="isAuthenticated"
         @click="toggleLiked"
         type="button"
-        class="h-10 mx-2"
+        class="h-10 mx-2 flex items-center justify-center"
       >
-        <svg
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          :fill="currentFilters.liked ? 'white' : 'none'"
-          viewBox="0 0 24 24"
-          class="h-10 w-10"
-        >
-          <path
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="1"
-            d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"
-          />
-        </svg>
+        <HeartIcon
+          :filled="!!currentFilters.liked"
+          size="w-10 h-10"
+          :class="currentFilters.liked ? 'text-red-500' : 'text-gray-400'"
+        />
       </button>
 
       <div class="w-full">
@@ -199,6 +189,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { Categories } from '@/constants/category'
 import type { ProductFilters } from '@/types'
+import HeartIcon from '@/components/icons/HeartIcon.vue'
 
 // Props
 interface Props {
@@ -209,7 +200,6 @@ interface Props {
     liked?: boolean
   }
   isAuthenticated: boolean
-  hasStore: boolean
 }
 
 const props = defineProps<Props>()
@@ -240,6 +230,7 @@ const toggleSortDropdown = () => {
 
 const toggleLiked = () => {
   emit('filtersChanged', {
+    ...currentFilters.value,
     liked: !currentFilters.value.liked,
     page: 1,
   })
@@ -247,6 +238,7 @@ const toggleLiked = () => {
 
 const selectCategory = (category: string) => {
   emit('filtersChanged', {
+    ...currentFilters.value,
     category: category || undefined,
     page: 1,
   })
@@ -255,6 +247,7 @@ const selectCategory = (category: string) => {
 
 const selectSort = (sort: string) => {
   emit('filtersChanged', {
+    ...currentFilters.value,
     sort,
     page: 1,
   })
@@ -263,6 +256,7 @@ const selectSort = (sort: string) => {
 
 const handleSubmit = () => {
   emit('filtersChanged', {
+    ...currentFilters.value,
     search: searchQuery.value || undefined,
     page: 1,
   })

@@ -1,5 +1,5 @@
-import type { ApiResponse, User } from '@/types'
-import { API_BASE_URL } from '.'
+import type { ApiResponse, User, UpdateUserData } from '@/types'
+import { API_BASE_URL, getAuthHeaders } from '.'
 
 /**
  * Get current user information
@@ -40,6 +40,40 @@ async function getCurrentUser(accessToken: string): Promise<ApiResponse<User>> {
   }
 }
 
+async function updateUser(data: UpdateUserData): Promise<ApiResponse<User>> {
+  try {
+    const url = `${API_BASE_URL}/users/profile`
+
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+    }
+
+    const responseData = await response.json()
+
+    return {
+      data: responseData.user || responseData,
+      success: true,
+      message: responseData.message || 'Perfil actualizado exitosamente',
+    }
+  } catch (error) {
+    console.error('Error updating user:', error)
+    return {
+      data: null,
+      success: false,
+      message: 'Error al actualizar el perfil',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    }
+  }
+}
+
 export const userService = {
   getCurrentUser,
+  updateUser,
 }

@@ -82,9 +82,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import PasswordInput from '@/components/PasswordInput.vue'
-import FormButton from '@/components/FormButton.vue'
-import VerificationCodeInput from '@/components/VerificationCodeInput.vue'
+import PasswordInput from '@/components/form/PasswordInput.vue'
+import FormButton from '@/components/form/FormButton.vue'
+import VerificationCodeInput from '@/components/form/VerificationCodeInput.vue'
 import { useToast } from 'vue-toastification'
 import { useResetPasswordForm } from '@/composables/useResetPasswordForm'
 import { authService } from '@/services/authService'

@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import FormInput from '@/components/FormInput.vue'
+import FormInput from '@/components/form/FormInput.vue'
 import EyeIcon from '@/components/icons/EyeIcon.vue'
 import EyeOffIcon from '@/components/icons/EyeOffIcon.vue'
 

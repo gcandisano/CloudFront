@@ -1,48 +1,45 @@
-import type { PaginationParams } from './api'
+import type { PaginationResponse } from './api'
 
-// Sales and Orders types
-export interface Sale {
+export interface SaleWithProducts {
   id: number
+  user_id: number
   date: string
-  total: number
-  status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
+  total_amount: number
+  status: string
   note?: string
   invoice_id?: number
-  address: string
+  address?: string
   products: SaleProduct[]
 }
 
 export interface SaleProduct {
   product_id: number
-  price: number
-  amount: number
-  name: string
-  description?: string
-  first_name: string
-  last_name: string
+  quantity: number
+  unit_price: number
+  total_price: number
+  product_name: string
+  product_description?: string
+  product_category: string
+  product_image_url?: string
 }
 
-// Sale form types
+export interface CreateSaleProduct {
+  product_id: number
+  quantity?: number
+}
+
 export interface CreateSaleForm {
-  total: number
-  status?: string
+  products: CreateSaleProduct[]
   note?: string
-  invoice_id?: number
-  address: string
-  cart_product_ids?: number[]
+  address?: string
 }
 
-// Sale response types
-export interface SalesResponse {
-  sales: Sale[]
-  pagination: PaginationParams
+export interface SaleCreationResponse {
+  message: string
+  sale: SaleWithProducts
 }
 
-// Sale statistics
-export interface SaleStats {
-  total_sales: number
-  total_spent: number
-  average_order: number
-  first_order: string
-  last_order: string
+export interface SalesListResponse {
+  sales: SaleWithProducts[]
+  pagination: PaginationResponse
 }

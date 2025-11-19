@@ -1,15 +1,4 @@
 import type { PaginationResponse } from './api'
-import type { User } from './user'
-import type { Review } from './review'
-
-export interface Store {
-  storeId: string
-  storeName?: string
-  description?: string
-  coverImageId?: string
-  storeImageId?: string
-  user: User
-}
 
 export interface Product {
   id: number
@@ -19,10 +8,14 @@ export interface Product {
   price: number
   image_url?: string
   paused?: boolean
-  seller_sub?: string
-  reviews?: Review[]
+  seller_id?: number
+  stock?: number
   rating?: number
   ratingCount?: number
+  is_favorite?: boolean
+  store_id: number
+  store_name: string
+  store_image_url: string | null
 }
 
 // Product form types
@@ -31,9 +24,7 @@ export interface CreateProductForm {
   description: string
   category: string
   price: number
-  email: string
   stock?: number
-  store_name?: string
   image_url?: string
 }
 
@@ -44,6 +35,7 @@ export interface ProductFilters {
   sort?: string
   liked?: boolean
   page?: number
+  limit?: number
   storeId?: string
 }
 
