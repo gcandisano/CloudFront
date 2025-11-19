@@ -5,7 +5,8 @@
       :class="finalImageClass" />
     <img v-else-if="storeImageUrl" :src="`${apiBaseUrl}/image/${storeImageUrl}`" :alt="storeName"
       :class="finalImageClass" />
-    <img v-else src="/store_icon.png" :alt="storeName" :class="finalImageClass" />
+    <img v-else src="https://blk-private-storage.s3.sa-east-1.amazonaws.com/store.svg" :alt="storeName"
+      :class="finalImageClass" />
   </div>
 </template>
 

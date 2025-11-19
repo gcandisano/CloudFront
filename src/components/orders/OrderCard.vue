@@ -1,9 +1,7 @@
 <template>
   <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-lg">
     <!-- Header: Order ID, Date, Status -->
-    <div
-      class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 pb-4 border-b border-gray-700"
-    >
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 pb-4 border-b border-gray-700">
       <div class="flex flex-col sm:flex-row sm:items-center sm:gap-4 mb-2 sm:mb-0">
         <h3 class="text-lg font-semibold text-white">Orden #{{ order.id }}</h3>
         <span class="text-sm text-gray-400">
@@ -12,7 +10,7 @@
       </div>
       <div class="flex items-center gap-3">
         <span :class="['px-3 py-1 rounded-full text-sm font-medium', getStatusClass(order.status)]">
-          {{ order.status }}
+          {{ formatStatus(order.status) }}
         </span>
         <span class="text-xl font-bold text-white">
           {{ formatPrice(order.total_amount) }}
@@ -35,19 +33,12 @@
     <!-- Products List -->
     <div class="space-y-3">
       <p class="text-sm font-medium text-gray-400 mb-2">Productos:</p>
-      <div
-        v-for="product in order.products"
-        :key="product.product_id"
-        class="flex items-start gap-4 p-3 bg-gray-900 rounded-lg"
-      >
+      <div v-for="product in order.products" :key="product.product_id"
+        class="flex items-start gap-4 p-3 bg-gray-900 rounded-lg">
         <!-- Product Image -->
         <div class="flex-shrink-0">
-          <img
-            v-if="product.product_image_url"
-            :src="product.product_image_url"
-            :alt="product.product_name"
-            class="w-16 h-16 object-cover rounded-lg"
-          />
+          <img v-if="product.product_image_url" :src="product.product_image_url" :alt="product.product_name"
+            class="w-16 h-16 object-cover rounded-lg" />
           <div v-else class="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center">
             <span class="text-gray-500 text-xs">Sin imagen</span>
           </div>
@@ -98,6 +89,19 @@ interface Props {
 }
 
 defineProps<Props>()
+
+const formatStatus = (status: string): string => {
+  const statusLower = status.toLowerCase()
+  let statusText = statusLower
+
+  if (statusLower.includes('pending')) statusText = 'pendiente'
+  else if (statusLower.includes('completed')) statusText = 'completado'
+  else if (statusLower.includes('cancelled') || statusLower.includes('canceled')) statusText = 'cancelado'
+  else if (statusLower.includes('shipped')) statusText = 'enviado'
+  else if (statusLower.includes('processing')) statusText = 'procesando'
+
+  return statusText.charAt(0).toUpperCase() + statusText.slice(1)
+}
 
 const getStatusClass = (status: string): string => {
   const statusLower = status.toLowerCase()
