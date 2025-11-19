@@ -152,8 +152,55 @@ async function createProduct(product: CreateProductForm): Promise<ApiResponse<Pr
   }
 }
 
+async function fetchRelatedProducts(
+  productId: string,
+  limit: number = 10,
+): Promise<ApiResponse<Product[]>> {
+  try {
+    const queryParams = new URLSearchParams()
+    if (limit) {
+      queryParams.append('limit', limit.toString())
+    }
+
+    const url = `${API_BASE_URL}/products/${productId}/related?${queryParams.toString()}`
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    })
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return {
+          data: [],
+          success: true,
+          message: 'Product not found',
+        }
+      }
+      const errorData = await response.json()
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    return {
+      data: data.products || [],
+      success: true,
+    }
+  } catch (error) {
+    console.error('Error fetching related products:', error)
+    return {
+      data: [],
+      success: false,
+      message: 'Error fetching related products',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    }
+  }
+}
+
 export const productService = {
   fetchProducts,
   fetchProduct,
   createProduct,
+  fetchRelatedProducts,
 }

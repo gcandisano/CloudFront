@@ -175,61 +175,24 @@ const handleReviewsPageChange = async (page: number) => {
 
 const loadRelatedProducts = async () => {
   try {
-    // TODO: Descomentar cuando tengas la API lista
-    // relatedProducts.value = await productStore.fetchRelatedProducts(route.params.id as string)
+    if (!product.value) return
 
-    // Datos hardcodeados de productos relacionados
-    relatedProducts.value = [
-      {
-        id: 2,
-        name: 'MacBook Air M2',
-        price: 1199.99,
-        image_url:
-          'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop',
-        seller_id: 1,
-        category: 'Electronics',
-        rating: 0,
-        ratingCount: 0,
-        paused: false,
-        store_id: 1,
-        store_name: 'TechStore',
-        store_image_url:
-          'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop',
-      },
-      {
-        id: 3,
-        name: 'AirPods Pro',
-        price: 249.99,
-        image_url:
-          'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=400&h=400&fit=crop',
-        seller_id: 2,
-        category: 'Electronics',
-        rating: 0,
-        ratingCount: 0,
-        paused: false,
-        store_id: 2,
-        store_name: 'AudioWorld',
-        store_image_url:
-          'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=400&h=400&fit=crop',
-      },
-      {
-        id: 4,
-        name: 'iPad Air',
-        price: 599.99,
-        image_url: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
-        seller_id: 3,
-        category: 'Electronics',
-        rating: 0,
-        ratingCount: 0,
-        paused: false,
-        store_id: 3,
-        store_name: 'GadgetZone',
-        store_image_url:
-          'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
-      },
-    ]
+    const response = await productService.fetchRelatedProducts(
+      product.value.id.toString(),
+      10,
+    )
+
+    if (!response.success) {
+      toast.error(response.message || 'Error al cargar productos relacionados')
+      relatedProducts.value = []
+      return
+    }
+
+    relatedProducts.value = response.data || []
   } catch (error) {
     console.error('Error cargando productos relacionados:', error)
+    toast.error('Error al cargar productos relacionados')
+    relatedProducts.value = []
   }
 }
 
