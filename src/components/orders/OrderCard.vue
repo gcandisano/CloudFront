@@ -77,6 +77,9 @@
         Factura ID: <span class="text-white">{{ order.invoice_id }}</span>
       </p>
     </div>
+
+    <!-- Slot para acciones adicionales (como botón de reseña) -->
+    <slot />
   </div>
 </template>
 

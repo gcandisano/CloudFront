@@ -55,14 +55,32 @@
 
       <!-- Orders List -->
       <div v-else-if="sales && sales.length > 0" class="space-y-6">
-        <OrderCard v-for="order in sales" :key="order.id" :order="order" />
-
+        <div v-for="order in sales" :key="order.id">
+          <OrderCard :order="order" />
+          <div class="mt-2 ml-4 flex flex-wrap gap-2">
+            <template v-for="product in order.products" :key="product.product_id">
+              <button
+                v-if="!product.hasReviewed"
+                class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded"
+                @click="openReviewModal(product)"
+              >
+                Reseñar producto
+              </button>
+            </template>
+          </div>
+        </div>
         <!-- Pagination -->
         <Pagination
           v-if="pagination && pagination.totalPages > 1"
           :current-page="pagination.page"
           :total-pages="pagination.totalPages"
           @page-changed="handlePageChange"
+        />
+        <SaleReviewModal
+          :is-open="showReviewModal"
+          :products="reviewProducts"
+          @close="closeReviewModal"
+          @submitted="closeReviewModal"
         />
       </div>
 
@@ -85,9 +103,20 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { saleService } from '@/services/saleService'
-import type { SaleWithProducts, PaginationResponse } from '@/types'
+import type { SaleWithProducts, PaginationResponse, SaleProduct } from '@/types'
 import OrderCard from '@/components/orders/OrderCard.vue'
 import Pagination from '@/components/ui/Pagination.vue'
+import SaleReviewModal from '@/components/ui/SaleReviewModal.vue'
+const showReviewModal = ref(false)
+const reviewProducts = ref<SaleProduct[]>([])
+const openReviewModal = (product: SaleProduct) => {
+  reviewProducts.value = [product]
+  showReviewModal.value = true
+}
+const closeReviewModal = () => {
+  showReviewModal.value = false
+  reviewProducts.value = []
+}
 
 const route = useRoute()
 const router = useRouter()

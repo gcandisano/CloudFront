@@ -30,9 +30,6 @@
 
     <!-- Add Address Modal -->
     <AddAddressModal :is-open="showAddressModal" @close="showAddressModal = false" @saved="handleAddressSaved" />
-
-    <SaleReviewModal :is-open="showReviewModal" :products="currentReviewProducts" @close="handleReviewNext"
-      @submitted="handleReviewNext" />
   </div>
 </template>
 
@@ -45,11 +42,9 @@ import { useAuthStore } from '@/stores/auth'
 import { saleService } from '@/services/saleService'
 import { useToast } from 'vue-toastification'
 import AddAddressModal from '@/components/ui/AddAddressModal.vue'
-import SaleReviewModal from '@/components/ui/SaleReviewModal.vue'
 import CartItem from '@/components/cart/CartItem.vue'
 import CartSummary from '@/components/cart/CartSummary.vue'
 import EmptyCart from '@/components/cart/EmptyCart.vue'
-import type { SaleProduct } from '@/types'
 
 const router = useRouter()
 const cartStore = useCartStore()
@@ -60,11 +55,6 @@ const toast = useToast()
 const loading = ref(false)
 const isProcessing = ref(false)
 const showAddressModal = ref(false)
-
-// Review Modal State
-const showReviewModal = ref(false)
-const reviewQueue = ref<SaleProduct[]>([])
-const currentReviewProducts = ref<SaleProduct[]>([])
 
 // Computed properties
 const canCheckout = computed(() => {
@@ -109,28 +99,6 @@ const handleAddressSaved = async () => {
   toast.success('Dirección guardada exitosamente')
 }
 
-const startReviewProcess = () => {
-  if (reviewQueue.value.length === 0) {
-    router.push('/orders')
-    return
-  }
-
-  // Take the next product from the queue
-  const nextProduct = reviewQueue.value[0]
-  currentReviewProducts.value = [nextProduct]
-  showReviewModal.value = true
-}
-
-const handleReviewNext = () => {
-  showReviewModal.value = false
-  // Remove the processed product
-  reviewQueue.value.shift()
-
-  // Small delay to allow modal to close visually before opening next
-  setTimeout(() => {
-    startReviewProcess()
-  }, 300)
-}
 
 const handleCheckout = async () => {
   if (!canCheckout.value || isProcessing.value) return
@@ -174,23 +142,11 @@ const handleCheckout = async () => {
 
     toast.success(response.data.message || 'Compra realizada exitosamente')
 
-    // Prepare products for review before clearing cart
-    reviewQueue.value = cartStore.items.map(item => ({
-      product_id: item.product.id,
-      quantity: item.quantity,
-      unit_price: item.product.price,
-      total_price: item.product.price * item.quantity,
-      product_name: item.product.name,
-      product_description: item.product.description,
-      product_category: item.product.category,
-      product_image_url: item.product.image_url
-    }))
-
-    // Clear cart
+    // Limpiar el carrito después de la compra
     await cartStore.clearCart()
 
-    // Start the review process instead of redirecting immediately
-    startReviewProcess()
+    // Redirigir a órdenes después de la compra
+    router.push('/orders')
 
   } catch (error) {
     console.error('Error processing checkout:', error)

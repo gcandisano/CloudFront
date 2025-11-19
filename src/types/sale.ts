@@ -1,5 +1,6 @@
 import type { PaginationResponse } from './api'
 
+
 export interface SaleWithProducts {
   id: number
   user_id: number
@@ -21,6 +22,7 @@ export interface SaleProduct {
   product_description?: string
   product_category: string
   product_image_url?: string
+  hasReviewed: boolean
 }
 
 export interface CreateSaleProduct {
