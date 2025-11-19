@@ -11,6 +11,7 @@ import ForgotPasswordView from '@/views/auth/ForgotPasswordView.vue'
 import ResetPasswordView from '@/views/auth/ResetPasswordView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import OrdersView from '@/views/OrdersView.vue'
+import SalesView from '@/views/SalesView.vue'
 import ExploreView from '@/views/ExploreView.vue'
 import StoreView from '@/views/StoreView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
@@ -86,6 +87,12 @@ const router = createRouter({
       path: '/orders',
       name: 'orders',
       component: OrdersView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/sales',
+      name: 'sales',
+      component: SalesView,
       meta: { requiresAuth: true },
     },
     {
