@@ -4,19 +4,13 @@
       <h1 class="text-3xl font-bold text-white mb-8">Mis Compras</h1>
 
       <!-- Filters -->
-      <div
-        class="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center sm:justify-between"
-      >
+      <div class="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center sm:justify-between">
         <div class="w-full sm:w-auto">
           <label for="status-filter" class="block text-sm font-medium text-gray-300 mb-2">
             Filtrar por estado
           </label>
-          <select
-            id="status-filter"
-            v-model="selectedStatus"
-            @change="handleStatusChange"
-            class="w-full sm:w-auto px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
+          <select id="status-filter" v-model="selectedStatus" @change="handleStatusChange"
+            class="w-full sm:w-auto px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">Todos los estados</option>
             <option value="pending">Pendiente</option>
             <option value="completed">Completado</option>
@@ -28,12 +22,8 @@
           <label for="limit-filter" class="block text-sm font-medium text-gray-300 mb-2">
             Por página
           </label>
-          <select
-            id="limit-filter"
-            v-model="limit"
-            @change="handleLimitChange"
-            class="w-full sm:w-auto px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
+          <select id="limit-filter" v-model="limit" @change="handleLimitChange"
+            class="w-full sm:w-auto px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option :value="10">10</option>
             <option :value="20">20</option>
             <option :value="50">50</option>
@@ -43,9 +33,7 @@
 
       <!-- Loading state -->
       <div v-if="loading" class="flex justify-center items-center py-20">
-        <div
-          class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
-        ></div>
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
 
       <!-- Error state -->
@@ -56,32 +44,13 @@
       <!-- Orders List -->
       <div v-else-if="sales && sales.length > 0" class="space-y-6">
         <div v-for="order in sales" :key="order.id">
-          <OrderCard :order="order" />
-          <div class="mt-2 ml-4 flex flex-wrap gap-2">
-            <template v-for="product in order.products" :key="product.product_id">
-              <button
-                v-if="!product.hasReviewed"
-                class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded"
-                @click="openReviewModal(product)"
-              >
-                Reseñar producto
-              </button>
-            </template>
-          </div>
+          <OrderCard :order="order" @review="openReviewModal" />
         </div>
         <!-- Pagination -->
-        <Pagination
-          v-if="pagination && pagination.totalPages > 1"
-          :current-page="pagination.page"
-          :total-pages="pagination.totalPages"
-          @page-changed="handlePageChange"
-        />
-        <SaleReviewModal
-          :is-open="showReviewModal"
-          :products="reviewProducts"
-          @close="closeReviewModal"
-          @submitted="closeReviewModal"
-        />
+        <Pagination v-if="pagination && pagination.totalPages > 1" :current-page="pagination.page"
+          :total-pages="pagination.totalPages" @page-changed="handlePageChange" />
+        <SaleReviewModal :is-open="showReviewModal" :products="reviewProducts" @close="closeReviewModal"
+          @submitted="handleReviewSubmitted" />
       </div>
 
       <!-- Empty state -->
@@ -113,9 +82,18 @@ const openReviewModal = (product: SaleProduct) => {
   reviewProducts.value = [product]
   showReviewModal.value = true
 }
+
 const closeReviewModal = () => {
   showReviewModal.value = false
   reviewProducts.value = []
+}
+
+const handleReviewSubmitted = () => {
+  // Mark reviewed products as reviewed so the button disappears
+  reviewProducts.value.forEach((p) => {
+    p.hasReviewed = true
+  })
+  closeReviewModal()
 }
 
 const route = useRoute()

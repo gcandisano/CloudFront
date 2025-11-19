@@ -61,12 +61,19 @@
           </div>
         </div>
 
-        <!-- Product Price -->
-        <div class="flex-shrink-0 text-right">
-          <p class="text-sm font-medium text-white">
-            {{ formatPrice(product.unit_price) }}
-          </p>
-          <p class="text-xs text-gray-400">Total: {{ formatPrice(product.total_price) }}</p>
+        <!-- Product Price and Actions -->
+        <div class="flex-shrink-0 text-right flex flex-col items-end gap-2">
+          <div>
+            <p class="text-sm font-medium text-white">
+              {{ formatPrice(product.unit_price) }}
+            </p>
+            <p class="text-xs text-gray-400">Total: {{ formatPrice(product.total_price) }}</p>
+          </div>
+
+          <button v-if="!product.hasReviewed" @click="$emit('review', product)"
+            class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-colors">
+            Reseñar
+          </button>
         </div>
       </div>
     </div>
@@ -84,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SaleWithProducts } from '@/types'
+import type { SaleWithProducts, SaleProduct } from '@/types'
 import { formatPrice, formatDate } from '@/utils/formatting'
 
 interface Props {
@@ -92,6 +99,10 @@ interface Props {
 }
 
 defineProps<Props>()
+
+defineEmits<{
+  review: [product: SaleProduct]
+}>()
 
 const formatStatus = (status: string): string => {
   const statusLower = status.toLowerCase()
